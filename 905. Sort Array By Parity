@@ -1,0 +1,18 @@
+Given an integer array nums, move all the even integers at the beginning of the array followed by all the odd integers.
+Return any array that satisfies this condition.
+
+
+vector<int> sortArrayByParity(vector<int>& nums) {
+        int n = nums.size();
+        int i = 0, j= 0;
+        while(i < n){
+            if(nums[i]%2 == 0){
+                swap(nums[i++], nums[j++]);
+            }
+            else{
+                i++;
+            }
+        }
+        
+        return nums;
+}
