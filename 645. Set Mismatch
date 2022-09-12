@@ -1,0 +1,32 @@
+You have a set of integers s, which originally contains all the numbers from 1 to n. Unfortunately, due to some error, one of the numbers in s got duplicated to another number in the set, which results in repetition of one number and loss of another number.
+
+You are given an integer array nums representing the data status of this set after the error.
+
+Find the number that occurs twice and the number that is missing and return them in the form of an array.
+
+
+
+
+vector<int> findErrorNums(vector<int>& nums) {
+        int n = nums.size(), i = 0;
+        vector<int> ans;
+        
+        while(i < n){
+            int correct = nums[i] - 1;
+            if(nums[i] != nums[correct]){
+                swap(nums[i], nums[correct]);
+            }
+            else{
+                i++;
+            }
+        }
+        
+        for(int i = 0; i < n;i++){
+            if(nums[i] != i+1){
+                ans.push_back(nums[i]);
+                ans.push_back(i+1);
+            }
+        }
+        
+        return ans;
+    }
