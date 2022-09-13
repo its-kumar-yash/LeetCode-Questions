@@ -1,0 +1,28 @@
+Given an array nums of integers, return how many of them contain an even number of digits.
+
+
+int countDigit(int n){
+        if(n < 0){
+            n *= -1;
+        }
+        if(n == 1){
+            return 1;
+        }
+        return log10(n) + 1;
+    }
+    
+    bool checkEven(int n){
+        int cnt = countDigit(n);
+        
+        return cnt%2 == 0;
+    }
+    int findNumbers(vector<int>& nums) {
+        int n = nums.size(), cnt = 0;
+        for(int i = 0; i < n; i++){
+            if(checkEven(nums[i])){
+                cnt++;
+            }
+        }
+        
+        return cnt;
+    }
