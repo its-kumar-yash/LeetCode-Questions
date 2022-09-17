@@ -1,0 +1,47 @@
+Given an array of integers arr, replace each element with its rank.
+The rank represents how large the element is. The rank has the following rules:
+ - Rank is an integer starting from 1.
+ - The larger the element, the larger the rank. If two elements are equal, their rank must be the same.
+ - Rank should be as small as possible.
+ 
+ 
+ vector<int> arrayRankTransform(vector<int>& arr) {
+        int n = arr.size();
+        
+        //if size is zero return empty array 
+        if(n == 0){
+            return {};
+        }
+        
+        //Create a vector pair of arr[i] and i
+        vector<pair<int, int>> v;
+        for(int i = 0; i< n; i++){
+            v.push_back({arr[i], i});
+        }
+        
+        //sorting the vector pair
+        sort(v.begin(), v.end());
+
+        //first element of vector pair is having Rank 1
+        int rank = 1;
+        int x = v[0].first;
+        v[0].first = rank;
+        
+        for(int i = 1; i < v.size(); i++){
+            if(v[i].first == x){
+                v[i].first = rank;
+            }
+            else{
+                rank++;
+                x = v[i].first;
+                v[i].first = rank;
+            }
+        }
+        
+        //Updating Arr with Ranks
+        for(int i = 0; i < n; i++){
+            arr[v[i].second] = v[i].first;
+        }
+        
+        return arr;
+    }
