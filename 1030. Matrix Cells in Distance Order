@@ -1,0 +1,37 @@
+You are given four integers row, cols, rCenter, and cCenter. There is a rows x cols matrix and you are on the cell with the coordinates (rCenter, cCenter).
+
+Return the coordinates of all cells in the matrix, sorted by their distance from (rCenter, cCenter) from the smallest distance to the largest distance. You may return the answer in any order that satisfies this condition.
+
+The distance between two cells (r1, c1) and (r2, c2) is |r1 - r2| + |c1 - c2|.
+
+
+
+    static bool cmp(vector<int> &a, vector<int> &b){
+        return a[2] < b[2];
+    }
+    
+    vector<vector<int>> allCellsDistOrder(int rows, int cols, int rCenter, int cCenter) {
+        //ans matrix
+        vector<vector<int>> ans;
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+                //distance between two cells
+                int dist = abs(i - rCenter) + abs(j - cCenter);
+                //pushing x-coordinate, y-coordinate and distance from starting cell
+                ans.push_back({i,j, dist});
+            }
+        }
+        
+        //sort on the basis of distance between them 
+        sort(ans.begin(), ans.end(), cmp);
+        
+        //updating ans matrix by removing distance element 
+        for(int i = 0; i < ans.size(); i++){
+            vector<int> temp;
+            temp.push_back(ans[i][0]);
+            temp.push_back(ans[i][1]);
+            ans[i] = temp;
+        }
+
+        return ans;
+    }
