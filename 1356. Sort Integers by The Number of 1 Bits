@@ -1,0 +1,47 @@
+You are given an integer array arr. Sort the integers in the array in ascending order by the number of 1's in their binary representation and in case of two or more integers have the same number of 1's you have to sort them in ascending order.
+
+Return the array after sorting it.
+
+
+class Solution {
+public:
+    // custom sort function
+    static bool cmp(pair<int, int>&a, pair<int,int> &b){
+        // if no. of 1's is equal 
+        if(a.second == b.second){
+            return a.first < b.first;
+        }
+        else{
+            return a.second < b.second;
+        }
+    }
+    
+    // funtion to count no. of 1's
+    int count1(int n){
+        int cnt = 0;
+        while(n){
+            cnt += n & 1;
+            n >>= 1;
+        }
+        return cnt;
+    }
+    
+    vector<int> sortByBits(vector<int>& arr) {
+        //integer pair that will store element of arr and no. of 1's
+        vector<pair<int, int>> ans;
+        
+        for(int i = 0; i < arr.size(); i++){
+            ans.push_back({arr[i], count1(arr[i])});
+        }
+        
+        //sort ans vector
+        sort(ans.begin(), ans.end(), cmp);
+        
+        //updating arr with sorted values
+        for(int i = 0; i < ans.size(); i++){
+            arr[i] = ans[i].first;
+        }
+        
+        return arr;
+    }
+};
