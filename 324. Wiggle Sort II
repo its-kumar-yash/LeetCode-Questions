@@ -1,0 +1,27 @@
+Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+
+You may assume the input array always has a valid answer.
+
+class Solution {
+public:
+    void wiggleSort(vector<int>& nums) {
+        int n = nums.size(), j = n - 1;
+        sort(nums.begin(), nums.end());
+        vector<int> temp(n,0);
+
+        //for odd indexes
+        for(int i = 1; i < n; i+=2){
+            temp[i] = nums[j];
+            j--;
+        }
+        
+        //for even indexes
+        for(int i = 0; i < n; i+=2){
+            temp[i] = nums[j];
+            j--;
+        }
+        
+        nums = temp;
+        
+    }
+};
