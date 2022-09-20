@@ -1,0 +1,49 @@
+Given an array of integers nums, sort the array in increasing order based on the frequency of the values. If multiple values have the same frequency, sort them in decreasing order.
+
+Return the sorted array.
+
+
+**1. Using Custom Comparator**
+*  Use a custom comparator to compare values by their frequency. If two values have the same frequency, compare their values.
+*  Create a frequency of size 201 to handle negative elements.
+* Time Complexity : O(NLogN)
+```
+class Solution {
+public:
+    //custom comparator function
+    static bool cmp(pair<int, int>&a, pair<int,int> &b){
+        // if frequency of element is same compare on the basis of their value
+        if(a.second == b.second){
+            return  a.first > b.first;
+        }
+        else{
+            return a.second < b.second;
+        }
+    }
+    
+    vector<int> frequencySort(vector<int>& nums) {
+        int n = nums.size();
+        //intializing frequency array with 0 
+        vector<int> freq(201, 0);
+        
+        for(int i = 0; i< n; i++){
+            //(nums[i] + 100) to handle negative values
+            freq[nums[i] + 100]++;
+        }
+        //integer pair to store element and its frequency
+        vector<pair<int, int>> arr;
+        for(int i = 0; i < n; i++){
+            arr.push_back({nums[i], freq[nums[i] + 100]});
+        }
+        //sorting array with custom comparator
+        sort(arr.begin(), arr.end(), cmp);
+        
+        //updating nums with sorted values
+        for(int i = 0; i < n; i++){
+            nums[i] = arr[i].first;
+        }
+        
+        return nums;
+    }
+};
+```
