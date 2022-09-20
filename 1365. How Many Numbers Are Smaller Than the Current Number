@@ -1,0 +1,28 @@
+Given the array nums, for each nums[i] find out how many numbers in the array are smaller than it. That is, for each nums[i] you have to count the number of valid j's such that j != i and nums[j] < nums[i].
+
+Return the answer in an array.
+
+class Solution {
+public:
+    vector<int> smallerNumbersThanCurrent(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ans;
+        //count array
+        vector<int> cnt(101, 0);
+        //copying nums into backup array
+        vector<int> backup = nums;
+        
+        // Sort the vector in descending order
+        sort(backup.begin(), backup.end(), greater<int>());
+            
+        for(int i = 0; i < n; i++){
+            cnt[backup[i]] = n - i - 1;
+        }
+        
+        for(int i = 0; i < n; i++){
+            ans.push_back(cnt[nums[i]]);
+        }
+        
+        return ans;
+    }
+};
