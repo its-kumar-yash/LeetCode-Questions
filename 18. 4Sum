@@ -1,0 +1,47 @@
+Given an array nums of n integers, return an array of all the unique quadruplets [nums[a], nums[b], nums[c], nums[d]] such that:
+
+0 <= a, b, c, d < n
+a, b, c, and d are distinct.
+nums[a] + nums[b] + nums[c] + nums[d] == target
+You may return the answer in any order.
+
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        int s, e;
+        vector<vector<int>> ans;
+        set<vector<int>> st;
+        sort(nums.begin(), nums.end());
+        
+        if(n < 4){
+            return ans;
+        }
+        
+        for(int i = 0; i < n; i++){
+            for(int j = i+1; j < n; j++){
+                s = j + 1;
+                e = n - 1;
+                while(s < e){
+                    //long long sum = (long)(nums[i] + nums[j] + nums[s] + nums[e]);
+                    
+                    if((long) nums[i] + nums[j] + nums[s] + nums[e] == target){
+                        st.insert({nums[i], nums[j], nums[s], nums[e]});
+                        s++, e--;
+                    }
+                    else if((long) nums[i] + nums[j] + nums[s] + nums[e] > target){
+                        e--;
+                    }
+                    else{
+                        s++;
+                    }
+                }
+            }
+        }
+        
+        for(auto i: st)
+            ans.push_back(i);
+        
+        return ans;
+    }
+};
