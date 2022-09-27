@@ -1,0 +1,33 @@
+Given an integer n, return the number of prime numbers that are strictly less than n.
+
+
+class Solution {
+public:
+    int SieveOfEratosthenes(int n){
+        int cnt = 0;
+        //initializing bool vector of n numbers
+        // firstly mark all numbers as true
+        vector<bool> prime(n+1, true);
+        // mark 0 & 1 as false (NOT PRIME)
+        prime[0] = prime[1] = false;
+        
+        for(int i = 2; i < n; i++){
+            // keep checking for every number 
+            if(prime[i]){
+                cnt++;
+                // and mark all its multiples as false
+                for(int j = 2*i; j < n; j+= i){
+                    prime[j] = false;
+                }
+            }
+        }
+        
+        return cnt;
+    }
+    
+    int countPrimes(int n) {
+        
+        int ans = SieveOfEratosthenes(n);
+        return ans;
+    }
+};
