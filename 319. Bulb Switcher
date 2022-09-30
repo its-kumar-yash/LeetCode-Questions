@@ -1,0 +1,30 @@
+There are n bulbs that are initially off. You first turn on all the bulbs, then you turn off every second bulb.
+
+On the third round, you toggle every third bulb (turning on if it's off or turning off if it's on). For the ith round, you toggle every i bulb. For the nth round, you only toggle the last bulb.
+
+Return the number of bulbs that are on after n rounds.
+
+
+**Using Math**
+* Time Complexity - O(√N)
+* If carefully observe, all the bulb that remain switched "ON" will be the perfect squares one's as they have 2n+1 factor, while others have only 2n factors.
+* So, Bulb Number that has odd number of factors will remain "ON". 
+```
+class Solution {
+public:
+    int bulbSwitch(int n) {
+        //initializing count 
+        int cnt = 0;
+        
+        // basically, we have to count total no. of perfect squares within the range of n 
+        for(int i = 1; i*i<= n ; i++){
+            //checking if i^2 is within n
+            if(i*i<= n){
+                cnt++;
+            }
+        }
+        
+        return cnt;
+    }
+};
+```
