@@ -1,0 +1,32 @@
+Given a string columnTitle that represents the column title as appears in an Excel sheet, return its corresponding column number.
+
+For example:
+
+A -> 1
+B -> 2
+C -> 3
+...
+Z -> 26
+AA -> 27
+AB -> 28 
+...
+
+
+class Solution {
+public:
+    int titleToNumber(string columnTitle) {
+        // n - length of string
+        int n = columnTitle.length();
+        int power = n - 1;
+        //initializing answer
+        int ans = 0, i = 0;
+        while(i < n){
+            // ASCII Code of A = 65
+            int ch = columnTitle[i] - 64;
+            ans += pow(26, power--)*ch;
+            i++;
+        }
+        
+        return ans;
+    }
+};
