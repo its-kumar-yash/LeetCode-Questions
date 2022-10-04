@@ -1,0 +1,25 @@
+Given two numbers, hour and minutes, return the smaller angle (in degrees) formed between the hour and the minute hand.
+
+Answers within 10-5 of the actual value will be accepted as correct.
+
+
+class Solution {
+public:
+    double angleClock(int hour, int minutes) {
+        //e.g. 3:30
+        double ans;
+        
+        ans = abs(minutes*6 - (hour*30 + minutes*0.5));
+        //degree Moved by minutes hand :- minutes*6     e.g 30*6 = 180
+        //degree Moved by start hand :- hour*30 + minutes*0.5   e.g 3*30 + 30*0.5 = 105 
+        // ans = 180 - 105 = 75
+        
+        if ( ans > 180){
+            return 360 - ans;
+        }
+        else{
+            return ans;
+        }
+        
+    }
+};
