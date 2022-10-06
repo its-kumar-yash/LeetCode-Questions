@@ -1,0 +1,106 @@
+You are given a large integer represented as an integer array digits, where each digits[i] is the ith digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading 0's.
+
+Increment the large integer by one and return the resulting array of digits.
+
+**Brute Force**
+```
+class Solution {
+public:
+    int digitCount(int n){
+        int cnt = 0;
+        while( n != 0){
+            cnt++;
+            n/=10;
+        }
+        
+        return cnt;
+    }
+    
+    vector<int> plusOne(vector<int>& digits) {
+        unsigned long long sum = 0;
+        int n = digits.size();
+        for(int i = 0; i < n ; i++){
+            sum  = sum*10 + digits[i];
+        }
+        
+        cout<<sum<<endl;
+        sum++;
+        if(digitCount(sum) != n){
+            vector<int> ans;
+            while(sum != 0){
+                int rem = sum % 10;
+                ans.push_back(rem);
+                sum/=10;
+            }
+            reverse(ans.begin(), ans.end());
+            return ans;
+        }
+        
+        int i = 0;
+        while(sum != 0){
+            int rem = sum % 10;
+            digits[i] = rem;
+            i++;
+            sum/=10;
+        }
+        
+        
+        reverse(digits.begin(), digits.end());
+        return digits;
+    }
+};
+```
+
+**Optimized Approach**
+```
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        int n = digits.size();
+        int carry = 0;
+        vector<int> ans;
+        carry = (digits[n-1] + 1)/10;
+        int d = digits[n-1] + 1;
+        ans.push_back(d%10);
+        
+        for(int i = n-2; i>=0; i--){
+            d = digits[i] + carry;
+            ans.push_back(d%10);
+            carry = d/10;
+        }
+        
+        if(carry != 0){
+            ans.push_back(carry);
+        }
+        
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
+```
+
+**Most Efficient Solution**
+```
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        int n = digits.size();
+        
+        for(int i = n - 1; i>=0; i--){
+            
+            if(digits[i] == 9){
+                digits[i] = 0;
+            }
+            else{
+                digits[i]++;
+                return digits;
+            }
+        }
+        
+        digits.push_back(1);
+        reverse(digits.begin(), digits.end());
+        
+        return digits;
+    }
+};
+```
