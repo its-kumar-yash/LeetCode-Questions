@@ -1,0 +1,62 @@
+You have an array arr of length n where arr[i] = (2 * i) + 1 for all valid values of i (i.e., 0 <= i < n).
+
+In one operation, you can select two indices x and y where 0 <= x, y < n and subtract 1 from arr[x] and add 1 to arr[y] (i.e., perform arr[x] -=1 and arr[y] += 1). The goal is to make all the elements of the array equal. It is guaranteed that all the elements of the array can be made equal using some operations.
+
+Given an integer n, the length of the array, return the minimum number of operations needed to make all the elements of arr equal.
+
+
+
+### Things to understand first : 
+*  arr[i] = (2 * i) + 1, will makes a **Odd-Numbered Array**
+*  to make every element equal, then each element must be equal to the N(size of Array), for better understanding perform dry run of one or two cases.
+ 
+**Brute Force [Time Limit Exceeded]**
+* Creating a vector of n elements
+* Consider two pointer, i & j
+* Loop over vector and perform the respective operation
+* Time Complexity - O( N )
+```
+class Solution {
+public:
+    int minOperations(int n) {
+        vector<int> arr(n);
+        for(int i = 0; i < n; i++){
+            arr[i] = (2 * i) + 1;
+        }
+        
+        int cnt = 0, i = 0,j = n - 1;
+        
+        while( i < j){
+            if((arr[i] != n)  && (arr[j] != n)){
+                arr[i]++; 
+                arr[j]--;
+                cnt++;
+            }
+            else{
+                i++;
+                j--;
+            }
+        }
+        
+        return cnt;
+    }
+};
+```
+
+**Optimized Approach**
+* minimum number of operations will be equal to summation of series :
+N-3,    N-5,   N-7,   ...... (N - (2 * i) + 1)
+* Time Complexity - O( N )
+```
+class Solution {
+public:
+    int minOperations(int n) {
+        int cnt = 0;
+        for(int i = 0; i < n/2; i++){ // sum of odd numbers
+            cnt += n - ((2 * i) + 1);
+        }
+        
+        return cnt;
+    }
+};
+```
