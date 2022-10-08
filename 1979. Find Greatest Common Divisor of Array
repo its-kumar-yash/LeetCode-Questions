@@ -1,0 +1,53 @@
+Given an integer array nums, return the greatest common divisor of the smallest number and largest number in nums.
+
+The greatest common divisor of two numbers is the largest positive integer that evenly divides both numbers.
+
+ **Using Euclid's Theorem**
+```
+class Solution {
+public:
+    int GCD(int a, int b){
+        if ( a == 0){
+            return b;
+        }
+        if( b == 0){
+            return a;
+        }
+        if(a == b){
+            return a;
+        }
+        
+        if (a > b)
+            return gcd(a-b, b);
+        
+        return gcd(a, b-a);
+    }
+    
+    int findGCD(vector<int>& nums) {
+        int max = *max_element(nums.begin(), nums.end());
+        int min = *min_element(nums.begin(), nums.end());
+        
+        return GCD(min, max);
+    }
+};
+```
+
+**Using Math (Iterative Approach)**
+```
+class Solution {
+public:
+    int findGCD(vector<int>& nums) {
+        int max = *max_element(nums.begin(),  nums.end());
+        int min = *min_element(nums.begin(),  nums.end());
+        
+        int factor;
+        for(int i = 1; i <= min; i++){
+            if((min%i == 0) && (max%i==0)){
+                factor = i;
+            }
+        }
+        
+        return factor;
+    }
+};
+```
