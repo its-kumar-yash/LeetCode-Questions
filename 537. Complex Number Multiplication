@@ -1,0 +1,45 @@
+A complex number can be represented as a string on the form "real+imaginaryi" where:
+
+real is the real part and is an integer in the range [-100, 100].
+imaginary is the imaginary part and is an integer in the range [-100, 100].
+i2 == -1.
+Given two complex numbers num1 and num2 as strings, return a string of the complex number that represents their multiplications.
+
+
+**Using String Operations & Math**
+* Time Complexity - O( N )
+```
+class Solution {
+public:
+    string complexNumberMultiply(string num1, string num2) {
+        string real1 , img1, real2, img2;
+        // calculating 1st complex number
+        int i = 0;
+        while(num1[i] != '+'){
+            real1 += num1[i];
+            i++;
+        }
+        img1 = num1.substr(i + 1, num1.length() -  i);
+        
+        // calculating 2nd complex number
+        i = 0;
+        while(num2[i] != '+'){
+            real2 += num2[i];
+            i++;
+        }
+        img2 = num2.substr(i + 1, num2.length() - i );
+        
+        //converting string into integers
+        int r1 = stoi(real1), r2 = stoi(real2);
+        int i1 = stoi(img1), i2 = stoi(img2);
+        
+        // product of complex number
+        int real = (r1 * r2) - (i1 * i2 );
+        int img  = (r1 * i2) + (r2 * i1);
+        
+        string ans = to_string(real) + "+" + to_string(img) + "i";
+        
+        return ans;
+    }
+};
+```
