@@ -1,0 +1,50 @@
+An integer n is strictly palindromic if, for every base b between 2 and n - 2 (inclusive), the string representation of the integer n in base b is palindromic.
+
+Given an integer n, return true if n is strictly palindromic and false otherwise.
+
+A string is palindromic if it reads the same forward and backward.
+
+
+
+class Solution {
+public:
+    // function to convert number into base k
+    string baseChange(int n, int k){
+        string ans = ""; // answer string
+        
+        int i = 0;
+        while( n > 0){
+             //adding digits of number in string 
+            ans += to_string(pow(10, i)*(n % k)); 
+            i++;
+            n = n/k;
+        }
+        
+        return ans;
+    }
+    
+    //function to check if a number is palindrome or not
+    bool palindrome(string s){
+        string temp = s; // copying the original string
+        
+        reverse(s.begin(), s.end());
+        if( s == temp ){  
+            return true;
+        }
+        
+        return false;
+    }
+    
+    bool isStrictlyPalindromic(int n) {
+        string ans = "";
+        
+        for(int i = 2; i <= n - 2; i++){
+            ans = baseChange(n,i);
+            if(!palindrome(ans)){
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};
