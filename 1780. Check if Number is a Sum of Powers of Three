@@ -1,0 +1,51 @@
+
+Given an integer n, return true if it is possible to represent n as the sum of distinct powers of three. Otherwise, return false.
+
+An integer y is a power of three if there exists an integer x such that y == 3x.
+
+**Brute Force[Wrong Answer]**
+* This Solution is Unable to Skip powers of 3
+* Fails in Number like 91 etc.
+```
+class Solution {
+public:
+    bool checkPowersOfThree(int n) {
+        int power = 1;
+        int sum = 0;
+        while( sum <= n){
+            
+            if( sum == n){
+                return true;
+            }
+            
+            sum += power;
+            power *= 3;
+             
+        }
+        
+        return false;
+    }
+};
+```
+
+**Optimized and Most Efficient Approach**
+* Ternary Number System (Base 3) - [Read More](https://www.geeksforgeeks.org/ternary-number-system-or-base-3-numbers/)(For Better Understanding Read this Article)
+* Time Complexity - O( Log <sub>3</sub> N )
+![Conversion](https://media.geeksforgeeks.org/wp-content/uploads/20200420154903/DecimalToTernary-Page-1.png)
+![Conversion](https://media.geeksforgeeks.org/wp-content/uploads/20200420161705/DecimalToTernary-Page-2.png) 
+```
+class Solution {
+public:
+    bool checkPowersOfThree(int n) {
+        while(n > 0){
+            if(n % 3 == 2){
+                return false;
+            }
+            n /= 3;
+        }
+        
+        return true;
+        
+    }
+};
+```
