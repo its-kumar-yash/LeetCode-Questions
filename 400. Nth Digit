@@ -1,0 +1,45 @@
+Given an integer n, return the nth digit of the infinite integer sequence [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...].
+
+
+class Solution {
+public:
+    int findNthDigit(int n) {
+        if(n < 10){
+            return n;
+        }
+        
+        // calculate the number of digits
+        long base = 9, digit = 1;
+        while (n - base*digit > 0){
+            n = n - base*digit;
+            base = base*10;
+            digit += 1;
+        }
+        
+        // calculate what the number is
+        int index = n % digit;
+        if(index == 0){
+            index = digit;
+        }
+        long num = 1;
+        
+        for(int i = 1; i < digit; i++){
+            num *= 10;
+        }
+        
+        if(digit == index){
+            num = num + n/digit - 1; 
+        }
+        else{
+            num = num + n/digit;
+        }
+        
+        
+        // find out which digit in the number is we wanted
+        for(int i = index; i < digit; i++){
+            num = num/10; 
+        }
+        
+        return num%10;
+    }
+};
