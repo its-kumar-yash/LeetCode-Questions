@@ -1,0 +1,66 @@
+Given an integer array nums, return the maximum difference between two successive elements in its sorted form. If the array contains less than two elements, return 0.
+
+You must write an algorithm that runs in linear time and uses linear extra space.
+
+
+**Using Radix Sort**
+* First Sort and then find Maximum Gap
+```
+class Solution {
+public:
+    // Radix Sort Code
+    
+    void countSort(vector<int>& nums, long long expo){
+        int n = nums.size();
+        int range = 10; // 0 to 9
+        vector<int> freqArr(range, 0);
+        
+        for(int i = 0; i < n; i++){
+            freqArr[nums[i]/expo % 10]++;
+        }
+        
+        //pair sum array
+        for(int i = 1; i < range; i++){
+            freqArr[i] += freqArr[i-1];
+        }
+        vector<int> ans(n);
+        for(int i = n - 1; i >= 0; i--){
+            int pos = freqArr[nums[i]/expo % 10] - 1;
+            ans[pos] = nums[i];
+            freqArr[nums[i]/expo % 10]--;
+        }
+        
+        for(int i = 0; i < n; i++){
+            nums[i] = ans[i];
+        }
+    }
+    
+    void radixSort(vector<int>& nums){
+        int max = *max_element(nums.begin(), nums.end());
+        
+        long long expo = 1;
+        while(expo <= max){
+            countSort(nums, expo);
+            expo = expo * 10; 
+        }
+    }
+    
+    // Finding Maximum Gap
+    int maximumGap(vector<int>& nums) {
+        radixSort(nums);
+        int n = nums.size();
+        int maxi = INT_MIN;
+        
+        if( n < 2){
+            return 0;
+        }
+        
+        for(int i = 1; i <= n - 1; i++){
+            
+            maxi = max(maxi, nums[i] - nums[i-1]);
+        }
+        
+        return maxi;
+    }
+};
+```
