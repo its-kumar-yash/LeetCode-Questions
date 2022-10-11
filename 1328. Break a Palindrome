@@ -1,0 +1,50 @@
+Given a palindromic string of lowercase English letters palindrome, replace exactly one character with any lowercase English letter so that the resulting string is not a palindrome and that it is the lexicographically smallest one possible.
+
+Return the resulting string. If there is no way to replace a character to make it not a palindrome, return an empty string.
+
+A string a is lexicographically smaller than a string b (of the same length) if in the first position where a and b differ, a has a character strictly smaller than the corresponding character in b. For example, "abcc" is lexicographically smaller than "abcd" because the first position they differ is at the fourth character, and 'c' is smaller than 'd'.
+
+
+class Solution {
+public:
+    // Function to check a palindrome
+    bool isPalindrome(string s){
+        string temp = "";
+        temp = s;
+        reverse(s.begin(), s.end());
+        if(temp == s){
+            return true;
+        }
+        
+        return false;
+        
+    }
+    
+    string breakPalindrome(string palindrome) {
+        int n = palindrome.length();
+        // temp string to store copy of original string
+        string temp = "";
+        temp = palindrome;
+        int i = 0;
+        //Edge Case
+        if(n == 1){
+            return "";
+        }
+        
+        while( i < n){
+            if(temp[i] != 'a'){
+                temp[i] = 'a';
+                break;
+            }
+            i++;
+        }
+        
+        if(isPalindrome(temp)){
+            palindrome[n-1] = 'b';
+            return palindrome;
+        }
+        
+        return temp;
+    }
+};
+ 
