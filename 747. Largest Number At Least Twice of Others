@@ -1,0 +1,98 @@
+You are given an integer array nums where the largest integer is unique.
+
+Determine whether the largest element in the array is at least twice as much as every other number in the array. If it is, return the index of the largest element, or return -1 otherwise.
+
+**Brute Force**
+* Using Vector Pair and Sorting
+* Time Complexity - O( N*LogN )
+```
+class Solution {
+public:
+    int dominantIndex(vector<int>& nums) {
+        vector<pair<int, int>> v;
+        
+        int n = nums.size();
+        
+        for(int i = 0; i < n; i++){
+            v.push_back(make_pair(nums[i], i));
+        }
+        
+        sort(v.begin(), v.end());
+        
+				//Second Largest Element
+        if(v[n-2].first == 0){
+            return v[n-1].second;
+        }
+        
+				//Largest Element/ Second Largest Element
+        else if(v[n-1].first/v[n-2].first >= 2){
+            return v[n-1].second;
+        }
+        
+        return -1;
+    }
+};
+```
+
+**Optimized Approach**
+* By Finding Maximum Index
+* Time Complexity - O( N )
+```
+class Solution {
+public:
+    int dominantIndex(vector<int>& nums) {
+        int n = nums.size();
+        int maxIndex = 0;
+				
+        for(int i = 0; i < n; i++){
+            if(nums[i] > nums[maxIndex]){
+                maxIndex = i;
+            }
+        }
+        
+        for(int i = 0; i < n; i++){
+            if( i == maxIndex){
+                continue;
+            }
+            else if(nums[maxIndex] < 2*nums[i]){
+                return -1;
+            }
+        }
+        
+        return maxIndex;
+    }
+};
+```
+
+**Using Binary Search - 100% Faster**
+```
+class Solution {
+public:
+    int dominantIndex(vector<int>& nums) {
+        int n = nums.size();
+				
+        vector<pair<int,int>> v;
+        for(int i = 0; i < n; i++){
+            v.push_back(make_pair(nums[i], i));
+        }
+        
+        sort(v.begin(), v.end());
+        
+        int s = 0;
+        int l = nums.size() - 1;
+        int mid;
+				
+        while(s < l){
+            mid = s + (l - s)/2;
+            if(2*v[mid].first > v[l].first){
+                return -1;
+            }
+            else{
+                s = mid + 1;
+            }
+        }
+        
+        return v[l].second;
+    }
+};
+```
