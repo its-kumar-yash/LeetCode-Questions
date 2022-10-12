@@ -1,0 +1,31 @@
+Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false.
+
+
+**Using Greedy Approach**
+* Time Complexity - O( N )
+```
+class Solution {
+public:
+    bool increasingTriplet(vector<int>& nums) {
+        int mid = INT_MAX, left = INT_MAX;
+        int n = nums.size();
+        
+        for(int i = 0; i < n; i++){
+            //if nums[i] is greater than mid means nums[i] is also greater than left means two elements before index i is less than nums[i] and that are left and mid. we find that it sataisfy the condition of triplet so we return true.
+            if(nums[i] > mid){
+                return true;
+            }
+            //if nums[i] is greater than left and less than mid then it is clear that we find b in a < b < c because it is quite possible that c can be INT_MAX.
+            else if( nums[i] > left && nums[i] < mid){
+                mid = nums[i];
+            }
+            //if nums[i] less than left then we update the value of left to nums[i] because we find a smaller element than it's previous value.
+            else if(nums[i] < left){
+                left = nums[i];
+            }
+        }
+        //when we traversed whole array means there is no triplet so we return false.
+        return false;
+    }
+};
+```
