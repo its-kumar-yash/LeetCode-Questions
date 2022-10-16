@@ -1,0 +1,27 @@
+Given an array arr of positive integers sorted in a strictly increasing order, and an integer k.
+
+Return the kth positive integer that is missing from this array.
+
+**Using Binary Search**
+* Time Complexity - O(LogN)
+* Approach - Eleminating Non-Missing Numbers from the range of 1 to N
+```
+class Solution {
+public:
+    int findKthPositive(vector<int>& arr, int k) {
+        int s = 0, e = arr.size(), mid;
+        
+        while(s < e){
+            mid = s + (e - s)/2;
+            if (arr[mid] - mid - 1 < k){
+                s = mid + 1;
+            }
+            else{
+                e = mid;
+            }
+        }
+        
+        return s + k;
+    }
+};
+```
