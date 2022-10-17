@@ -1,0 +1,40 @@
+You are standing at position 0 on an infinite number line. There is a destination at position target.
+
+You can make some number of moves numMoves so that:
+
+On each move, you can either go left or right.
+During the ith move (starting from i == 1 to i == numMoves), you take i steps in the chosen direction.
+Given the integer target, return the minimum number of moves required (i.e., the minimum numMoves) to reach the destination.
+
+
+
+**Using Concept of Binary Search and Mathematics**
+* Time Complexity - O( N )
+```
+class Solution {
+public:
+    int reachNumber(int target) {
+        //Egde Cases
+        if(target<0){
+            target=-target;
+        }
+        
+        int step = 0; // Number of moves
+        int sum = 0;
+        
+        while(true){
+            step++; // increment step at each iteration
+            sum = sum + step;
+            //if at certain point after adding step with sum,
+            // sum == target, we found our result!
+            if(sum == target){
+                return step;
+            }
+            //if sum becomes greater than target and difference of sum and target is even, return step
+            else if(sum>target && (sum-target)%2==0){
+                return step;
+            }
+        }
+    }
+};
+```
