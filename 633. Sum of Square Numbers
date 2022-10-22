@@ -1,0 +1,57 @@
+Given a non-negative integer c, decide whether there're two integers a and b such that a2 + b2 = c.
+
+
+1. Two Pointer
+
+Time Complexity - O( N1/2 )
+class Solution {
+public:
+    bool judgeSquareSum(int c) {
+        int s = 0, e = sqrt(c);
+        
+        while(s <= e) {
+            long long p = (long long)s * s + e * e;
+            if(p == c){
+                return true;
+            }
+            if(p < c){ 
+                s++;
+            }
+            else{
+                e--;
+            }
+        }
+        return false;
+    }
+};
+2. Using Binary Search
+
+Time Complexity -O( N * LogN)
+class Solution {
+public:
+    bool judgeSquareSum(int c) {
+        int s;
+        int e;
+        long long res, mid, i;
+        
+        for(i = 0; i <= c; i++){
+            s = i, e = c;
+            while( s <= e ){
+                mid = s + ( e - s )/2;
+                res = i*i + mid*mid;
+                if( res == c){
+                    return true;
+                }
+                else if (res > c){
+                    e = mid - 1;
+                }
+                else{
+                    s = mid + 1;
+                }
+            }
+        }
+        
+        
+        return false;
+    }
+};
