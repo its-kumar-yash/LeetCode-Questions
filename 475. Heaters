@@ -1,0 +1,88 @@
+Winter is coming! During the contest, your first job is to design a standard heater with a fixed warm radius to warm all the houses.
+
+Every house can be warmed, as long as the house is within the heater's warm radius range. 
+
+Given the positions of houses and heaters on a horizontal line, return the minimum radius standard of heaters so that those heaters could cover all houses.
+
+Notice that all the heaters follow your radius standard, and the warm radius will the same.
+
+
+
+class Solution {
+public:
+    int floor(vector<int>& heaters, int target){
+
+        int n = heaters.size();
+        int ans = -1; 
+
+        int s = 0, e = n - 1;
+        int mid;
+        
+        while(s <= e){
+            mid = s + (e - s)/2;
+            
+            if (target == heaters[mid]) {
+                return heaters[mid];
+            }
+            else if (target > heaters[mid]) {
+                ans = heaters[mid];
+                s = mid + 1;
+            }
+            else {
+                e = mid - 1; 
+            }
+        }
+        
+        return ans;
+    }
+    
+    
+    int ceil(vector<int>& heaters, int target){
+        int n = heaters.size();
+        int ans = -1;
+
+        
+        int s = 0, e = n - 1;
+        int mid;
+        
+        while(s <= e){
+            mid = s + ( e - s )/2;
+            if( heaters[mid] == target){
+                return heaters[mid];
+            }
+            else if(heaters[mid] < target){
+                s = mid + 1;
+            }
+            else{
+                ans = heaters[mid];
+                e = mid - 1;
+            }
+        }
+        
+        return ans;
+    }
+    
+    int findRadius(vector<int>& houses, vector<int>& heaters) {
+        sort(heaters.begin(), heaters.end());
+        int maxi = 0, res, floorEle, ceilEle;
+        int n = houses.size();
+        for(int i = 0; i < n; i++){
+            
+            floorEle = floor(heaters, houses[i]); 
+            ceilEle = ceil(heaters, houses[i]);
+            
+            if(floorEle == -1)
+                res = ceilEle - houses[i];
+            
+            else if(ceilEle == -1)
+                res = houses[i] - floorEle;
+            
+            else
+                res = min(houses[i]-floorEle, ceilEle - houses[i]);
+            
+            maxi = max(maxi,res);
+        }
+        
+        return maxi;
+    }
+};
