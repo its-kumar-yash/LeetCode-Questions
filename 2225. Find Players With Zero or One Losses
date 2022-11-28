@@ -1,0 +1,52 @@
+You are given an integer array matches where matches[i] = [winneri, loseri] indicates that the player winneri defeated player loseri in a match.
+
+Return a list answer of size 2 where:
+
+answer[0] is a list of all players that have not lost any matches.
+answer[1] is a list of all players that have lost exactly one match.
+The values in the two lists should be returned in increasing order.
+
+Note:
+
+You should only consider the players that have played at least one match.
+The testcases will be generated such that no two matches will have the same outcome.
+
+
+
+
+**Using Frequency Array**
+* Time Complexity - O( N )
+* Space Complexity - O( N )
+```
+class Solution {
+public:
+    vector<vector<int>> findWinners(vector<vector<int>>& matches) {
+        vector<bool> matchPlayed(100001);//bool array for marking if a player has played any match or not
+        vector<int> matchLoss(100001); //frequency array for counting the number of losses by each player
+        vector<vector<int>> result(2);
+
+        //updating frequency array
+        for(int i = 0; i < matches.size(); i++){
+            matchPlayed[matches[i][0]] = true;
+            matchPlayed[matches[i][1]] = true;
+            matchLoss[matches[i][1]]++;
+        }
+
+        for(int i = 0; i < 100001; i++){
+            //if player has played a match
+            if(matchPlayed[i]){
+                //if his losses is equal to 0 
+                if(matchLoss[i] == 0){
+                    result[0].push_back(i);
+                }
+                //if his losses is equal to 1
+                else if(matchLoss[i] == 1){
+                    result[1].push_back(i);
+                }
+            }
+        }
+
+        return result;
+    }
+};
+```
