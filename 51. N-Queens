@@ -1,0 +1,114 @@
+The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other.
+
+Given an integer n, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.
+
+Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space, respectively.
+
+
+**BackTracking && DFS**
+Time Complexity - O( N! ) 
+![Queen Moves](https://www.tutorialcup.com/wp-content/uploads/2020/05/chess.png?ezimgfmt=rs:312x310/rscb41/ngcb41/notWebP)
+```
+class Solution {
+public:
+    vector<vector<string>> originalChess;
+    bool isSafe(vector<string> chessRow, int row, int col){
+        //condition1 - same col
+        for(int i = row - 1, j = col; i >= 0; i--){
+            if(chessRow[i][j] == 'Q'){
+                return false;
+            }
+        }
+        //condition2 - forward diagonal
+        for(int i = row - 1, j = col + 1; i >= 0 && j < chessRow.size(); i--, j++){
+            if(chessRow[i][j] == 'Q'){
+                return false;
+            }
+        }
+        //condition3 - backward diagonal 
+        for(int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--){
+            if(chessRow[i][j] == 'Q'){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void placeQueen(vector<string> &chessRow, int row){
+        //base condition
+        if(row == chessRow.size()){
+            originalChess.push_back(chessRow);
+            return;
+        }
+        // iterate every possible position
+        for(int col = 0; col < chessRow.size(); col++){
+            if(isSafe(chessRow, row, col)){
+                chessRow[row][col] = 'Q';//placing Q 
+                placeQueen(chessRow, row + 1);
+                chessRow[row][col] = '.';//backtracking
+            }
+        }
+    }
+
+    vector<vector<string>> solveNQueens(int n) {
+        vector<string> chessRow(n,string(n,'.'));
+        placeQueen(chessRow, 0);
+        return originalChess;
+    }
+};
+```
+
+```
+class Solution {
+public:
+    
+    bool isSafe(vector<string> boardRow, int row, int col){
+        //condition 1 - Same Column
+        for(int i = row - 1; i >= 0; i--){
+            if(boardRow[i][col] == 'Q'){
+                return false;
+            }
+        }
+
+        //condition 2 - forward Diagonal
+        for(int i = row - 1, j = col + 1; i >= 0 && j < boardRow.size(); i--, j++){
+            if(boardRow[i][j] == 'Q'){
+                return false;
+            }
+        }
+
+        //condition 3 - backward Diagonal
+        for(int i = row - 1, j = col - 1; i >= 0 && j >=0; i--, j--){
+            if(boardRow[i][j] == 'Q'){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void solve(vector<vector<string>>&chessBoard ,vector<string> &boardRow, int row){
+        //Base Case
+        if(row == boardRow.size()){
+            chessBoard.push_back(boardRow);
+            return;
+        }
+
+        //itertion to check every option
+        for(int col = 0; col < boardRow.size(); col++){
+            if(isSafe(boardRow, row, col)){
+                boardRow[row][col] = 'Q';//Placing a Queen
+                solve(chessBoard, boardRow, row + 1);
+                boardRow[row][col] = '.';//BackTracking
+            }
+        }
+    }
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>>chessBoard;
+        
+        solve(chessBoard,boardRow, 0);
+        return chessBoard;
+    }
+};
+```
