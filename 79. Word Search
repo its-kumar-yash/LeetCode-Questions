@@ -1,0 +1,61 @@
+Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+
+```
+class Solution {
+public:
+    bool solve(vector<vector<char>>& board, string word, int idx, int row, int col){
+
+        //base case
+        if(row < 0 || col < 0 || row == board.size() || col == board[0].size() ){
+            return false;
+        }
+        //check if all the alphabets in the word is checked
+        if(idx == word.length()){
+            return true;
+        }
+
+        if(board[row][col] != word[idx]){
+            return false;
+        }
+				//mark as visited 
+        board[row][col] = '0';
+        //possible moves
+        bool result =  solve(board, word, idx + 1, row - 1, col) //top
+        || solve(board, word, idx + 1, row, col - 1) //left
+        || solve(board, word, idx + 1, row + 1, col)//down
+        || solve(board, word, idx + 1, row, col + 1); //right
+        //change the character back for other searches
+        board[row][col] = word[idx]; //backtracking
+        return result;
+ 
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        int n = board.size(), m = board[0].size();
+        // if(word == "") return false;
+        // vector<vector<bool>> visited(n, vector<bool> (m, false));
+        
+        //Edge Case
+        if(n == 1 && m == 1){
+            if( word.length() == 1 && board[0][0] == word[0]){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+						//check if the characters are equal then call solve
+                if(board[i][j] == word[0] && solve(board, word, 0, i, j)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+```
