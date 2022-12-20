@@ -1,0 +1,41 @@
+Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order.
+
+The same number may be chosen from candidates an unlimited number of times. Two combinations are unique if the 
+frequency
+ of at least one of the chosen numbers is different.
+
+The test cases are generated such that the number of unique combinations that sum up to target is less than 150 combinations for the given input.
+
+**Using BackTracking and Recursion**
+![State Space Tree](https://assets.leetcode.com/users/images/a7b5e2bf-f7c5-4e3a-a040-5cb619027830_1645077072.6875963.jpeg)
+```
+class Solution {
+public:
+    //To store result
+    vector<vector<int>> ans;
+    void solve(const vector<int>& candidates, vector<int>& nums,int target, int idx, int currSum){
+        //BackTrack
+        if(currSum > target){
+            return;
+        }
+        //store the solution and backtrack
+        if(currSum == target){
+            ans.push_back(nums);
+            return;
+        }
+        for(int i = idx; i < candidates.size(); i++){ // try all possible options for the next level
+            nums.push_back(candidates[i]); // put one option into the combination
+            currSum += candidates[i]; // to store current sum
+            solve(candidates, nums, target, i, currSum); // try with this combination,  whether it gives a solution or not.
+            nums.pop_back(); ////when this option backtrack to here, remove this and go on to the next option.
+            currSum -= candidates[i];
+        }
+
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<int> nums;
+        solve(candidates, nums, target, 0, 0);
+        return ans;
+    }
+};
+```
