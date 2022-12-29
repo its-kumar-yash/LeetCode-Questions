@@ -1,0 +1,152 @@
+You are given the heads of two sorted linked lists list1 and list2.
+
+Merge the two lists in a one sorted list. The list should be made by splicing together the nodes of the first two lists.
+
+Return the head of the merged linked list.
+
+
+
+**1. Iterative Approach and Basic LL Insertion Operation ( Beats 98% )**
+* Time Complexity - $$O( N )$$
+* Space Complexity - $$O( N )$$
+```
+class Solution {
+public:
+    //function to insert element at the end of the LL
+    void insertAtEnd(ListNode* &head, int data){
+    
+        ListNode* temp = new ListNode(data);
+        ListNode* prev = head;
+        while(prev->next != NULL){
+            prev = prev->next;
+        }
+
+        prev->next = temp;
+        temp->next = NULL;
+    
+    }
+
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        ListNode* first = list1;  // first pointer
+        ListNode* second = list2; // second pointer
+        ListNode* preHead = new ListNode(0); // answer Linked List initialized with preHead Node of Value 0
+
+        //below cases are not necessary but it increases efficiency
+        if(list1 == NULL){
+            return list2;
+        }
+        if(list2 == NULL){
+            return list1;
+        }
+
+        //iterating over both the list and inserting the smallest element at the end of answer list
+        while(first != NULL && second != NULL){
+            if(first->val < second->val){
+                insertAtEnd(preHead, first->val);
+                first = first->next;
+            }
+            else{
+                insertAtEnd(preHead, second->val);
+                second = second->next;
+            }
+        }
+
+        //when list2 becomes empty, insert all list1 elements to answer list
+        while(first != NULL){
+            insertAtEnd(preHead, first->val);
+            first = first->next;
+        }
+
+        //when list1 becomes empty, insert all list2 elements to answer list
+        while(second != NULL){
+            insertAtEnd(preHead, second->val);
+            second = second->next;
+        }
+
+        return preHead->next;
+    }
+};
+```
+
+**2. Without using insert function**
+* Time Complexity - $$O( N )$$
+* Space Complexity - $$O( 1 )$$
+```
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        ListNode* first = list1;  // first pointer
+        ListNode* second = list2; // second pointer
+        ListNode* preHead = new ListNode(0); // answer Linked List initialized with preHead Node of Value 0
+        ListNode* p = preHead;
+        //below cases are not necessary but it increases efficiency
+        if(list1 == NULL){
+            return list2;
+        }
+        if(list2 == NULL){
+            return list1;
+        }
+
+        //iterating over both the list and inserting the smallest element at the end of answer list
+        while(first != NULL && second != NULL){
+            if(first->val < second->val){
+                p->next = first;
+                p = p->next;
+                first = first->next;
+            }
+            else{
+                p->next = second;
+                p = p->next;
+                second = second->next;
+            }
+        }
+
+        //when list2 becomes empty, insert all list1 elements to answer list
+        while(first != NULL){
+            p->next = first;
+            p = p->next;
+            first = first->next;
+        }
+
+        //when list1 becomes empty, insert all list2 elements to answer list
+        while(second != NULL){
+            p->next = second;
+            p = p->next;
+            second = second->next;
+        }
+
+        return preHead->next;
+    }
+};
+```
+
+**3. Recursive Approach**
+* Time Complexity - O( N+ M )
+* Space Complexity - O( N ) // for using call stack
+```
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        /*Base Conditions*/
+
+        //if list1 is empty, return list2
+        if(list1 == NULL){
+            return list2;
+        }
+        //if list2 is empty, return list1
+        if(list2 == NULL){
+            return list1;
+        }
+        // if value pointend by l1 pointer is less than equal to value pointed by l2 pointer
+		// we wall call recursively l1 -> next and whole l2 list.
+        if(list1->val <= list2->val){
+            list1->next = mergeTwoLists(list1->next, list2);
+            return list1;
+        }
+        else{
+            list2->next = mergeTwoLists(list1, list2->next);
+            return list2;
+        }
+    }
+};
+``` 
