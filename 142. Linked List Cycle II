@@ -1,0 +1,71 @@
+Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null.
+
+There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer. Internally, pos is used to denote the index of the node that tail's next pointer is connected to (0-indexed). It is -1 if there is no cycle. Note that pos is not passed as a parameter.
+
+Do not modify the linked list.
+
+
+
+**1. Using Cycle Detection Approach**
+* Algorithm :
+	1. 	Detect cycle & find length of cycle
+	2. 	Move second ahead by length of cycle times
+	3. 	Move first and second one by one, it will meet at starting node of cycle
+* Time Complexity : $$O(N^2)$$
+* Space Complexity : $$O(1)$$
+* Code :
+	```
+	class Solution {
+	public:
+			//function to detect cycle and length of cycle
+			int cycleLength(ListNode *head){
+					ListNode *slow = head;
+					ListNode *fast = head;
+
+					while(fast != NULL && fast->next != NULL){
+							slow = slow->next;
+							fast = fast->next->next;
+
+							if(slow == fast){ //cycle detected
+									int length = 0;
+									do{
+											slow = slow->next;
+											length++;
+									}while(slow != fast);
+
+									return length;
+							}
+					}
+
+					return 0; // cycle not detected
+			}
+			ListNode *detectCycle(ListNode *head) {
+					//find length of cycle
+					int length = cycleLength(head);
+
+					//if length is zero, then No Cycle present, return NULL
+					if(length == 0){
+							return NULL;
+					}
+
+					//initialize two pointers first and second
+					ListNode *first = head;
+					ListNode *second = head;
+
+					//move second pointer length of cycle times
+					while(length > 0){
+							second = second->next;
+							length--; 
+					}
+
+					//Now, move second and first pointer one by one, it will meet at starting node of cycle
+					while(first != second){
+							first = first->next;
+							second = second->next;
+					}
+
+					//return any of one pointer
+					return first;
+			}
+	};
+	```
