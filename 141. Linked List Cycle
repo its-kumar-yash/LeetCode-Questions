@@ -1,0 +1,43 @@
+Given head, the head of a linked list, determine if the linked list has a cycle in it.
+There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer. Internally, pos is used to denote the index of the node that tail's next pointer is connected to. Note that pos is not passed as a parameter.
+Return true if there is a cycle in the linked list. Otherwise, return false.
+
+
+**Using Fast & Slow Pointer Approach**
+* Time Complexity - $$O( N )$$
+* Space Complexity - $$O( 1 )$$
+* Algorithm :
+	1. Check whether the head is None, if it is just return False
+	2. Use 2 pointers slow and fast.
+The slow pointer will move 1 step at a time and the fast pointer will move 2 steps.
+	3. The looping condition has a terminating condition when fast pointer equals slow pointer. That means we have encountered a cycle and it should return True.
+	4. If the fast pointer becomes None or fast.next becomes None, that means we have reached the end of the linked list and there is no cycle. So return False.
+	5. Increment slow by 1 i.e. slow=slow->next
+Increment fast by 2 i.e. fast=fast->next->next
+* Code :
+	```
+	class Solution {
+	public:
+			bool hasCycle(ListNode *head) {
+					if(head == NULL){
+							return false;
+					}
+
+					//Fast & Slow Pointer Approach
+					ListNode* slow = head;
+					ListNode* fast = head;
+
+					while(fast != NULL && fast->next != NULL){
+							slow = slow->next; //moving slow by 1 node
+							fast = fast->next->next; //moving fast by 2 node
+							if(slow == fast){ //termination condition
+									return true; // cycle found
+							}
+					}
+
+					return false; //cycle not found
+			}
+	};
+	```
+	
+	
