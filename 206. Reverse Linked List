@@ -1,0 +1,82 @@
+Given the head of a singly linked list, reverse the list, and return the reversed list.
+
+
+**1. Iterative / Inplace / Two Pointer Approach**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(1)$$
+* Code : 
+	```
+	class Solution {
+	public:
+			ListNode* reverseList(ListNode* head) {
+					ListNode* prev = NULL;
+					ListNode* curr = head;
+					ListNode* next;
+
+					while(curr != NULL){
+							next = curr->next; // to have access of remaining Linked List
+							curr->next = prev; //reversing the connection of curr
+							prev = curr; //moving forward prev and curr
+							curr = next;
+					}
+
+					//at end new head will be prev pointer
+					return prev;
+			}
+	};
+	```
+	
+**2. Two Pointer Recursive Approach**
+* Time Complexity - $$O( N )$$
+* Space Complexity - $$O( N )$$
+* Code:
+	```
+	class Solution {
+			public:
+					void reverse(ListNode* &head, ListNode* curr, ListNode* prev){
+							//base case
+							if(curr == NULL){
+									head = prev;
+									return;
+							}
+
+							ListNode* next = curr->next;  // to access remaining list
+							reverse(head, next, curr); //recursive call to reverse the remaining list
+							curr->next = prev; //reverse the connection of curr node to prev
+
+					}
+					ListNode* reverseList(ListNode* head) {
+							ListNode* curr = head;
+							ListNode* prev = NULL;
+
+							reverse(head, curr, prev);
+
+							return head;
+					}
+			};
+	```
+		
+**3. Recursive Approach with head pointer Only**
+* Time Complexity - $$O( N )$$
+* Space Complexity - $$O( N )$$
+* Code :
+	 ```
+	class Solution {
+			public:
+					ListNode* reverseList(ListNode* head) {
+							//base case
+							if(head == NULL || head->next == NULL){
+									return head;
+							}
+
+							//recursive call to reverse the remaining list 
+							ListNode* newHead = reverseList(head->next); 
+							//reversing the connection of head's next node with head
+							head->next->next = head;
+							head->next = NULL;
+
+							return newHead;
+					}
+			};
+	```
+		
