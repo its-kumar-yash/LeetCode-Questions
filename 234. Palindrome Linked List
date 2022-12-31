@@ -1,0 +1,70 @@
+Given the head of a singly linked list, return true if it is a 
+palindrome
+ or false otherwise.
+
+
+**1. Iterative Solution**
+* Algorithm :
+	1. 	find the middle of LL
+	2. 	reverse the second half
+	3. 	compare the two halves
+	4. 	re-reverse the second half (optional)
+	5. 	return true/false
+* Time Complexity :  $$O(N)$$
+* Asked in : google, microsoft, amazon, apple, linkedin
+* Code:
+	```
+	class Solution {
+	public:
+			//function to find the middle of LL
+			ListNode* getMid(ListNode* head){
+					ListNode* slow = head;
+					ListNode* fast = head->next;
+
+					while(fast && fast->next){
+							slow = slow->next;
+							fast = fast->next->next;
+					}
+
+					return slow;
+			}
+			//function to reverse LL
+			ListNode* reverseList(ListNode* head){
+					ListNode* prev = NULL;
+					ListNode* curr = head;
+					ListNode* next = NULL;
+
+					while(curr != NULL){
+							next = curr->next;
+							curr->next = prev;
+							prev = curr;
+							curr = next;
+					}
+
+					return prev;
+			}
+			bool isPalindrome(ListNode* head) {
+					//step 1 - find the middle of LL
+					ListNode* mid = getMid(head);
+
+					//step 2 - reverse the second half of LL
+					ListNode* secondHead = reverseList(mid);
+					ListNode* reverseHead = secondHead; //to re-reverse the second half
+
+					//step 3 - compare both halves
+					while(head != NULL && secondHead != NULL){
+							if(head->val != secondHead->val){
+									break;
+							}
+							head = head->next;
+							secondHead = secondHead->next;
+					}
+
+					//step 4 - re-reverse the second half(Optional step)
+					reverseHead = reverseList(reverseHead);
+
+					//step 5 - return answer
+					return head == NULL || secondHead == NULL;
+			}
+	};
+	```
