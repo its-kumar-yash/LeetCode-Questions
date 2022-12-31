@@ -1,0 +1,88 @@
+Given the head of a linked list, return the list after sorting it in ascending order.
+
+**1. Using Merge Sort**
+* Merge Sort Algorithm :
+	1. Find middle of linked list.
+	2. Break the LL into two halves (left & right).
+	3. Recursively sort left and right halves.
+	4. merge the two halves.
+	5. return merged list.
+* Time Complexity - $$O( NLogN )$$ 
+* Code :
+	```
+	class Solution {
+	public:
+			//function to find the middle node of the ll
+			ListNode* getMid(ListNode* head){
+					//using slow and fast pointer approach
+					ListNode* slow = head;
+					ListNode* fast = head->next;
+
+					while(fast != NULL && fast->next != NULL){
+							slow = slow->next;
+							fast = fast->next->next;
+					}
+
+
+					return slow;
+			}
+
+			//function to merge two sorted ll
+			ListNode* merge(ListNode* l1, ListNode* l2){
+					ListNode* f = l1; //first pointer
+					ListNode* s = l2; //second pointer
+					ListNode* preHead = new ListNode(0); // initializing answer linked list
+					ListNode* p = preHead;
+
+					while(f != NULL && s != NULL){
+							if(f->val < s->val){
+									p->next = f;
+									p = p->next;
+									f = f->next;
+							}
+							else{
+									p->next = s;
+									p = p->next;
+									s = s->next;
+							}
+					}
+
+					while(f != NULL){
+							p->next = f;
+							p = p->next;
+							f = f->next;
+					}
+
+					while( s != NULL){
+							p->next = s;
+							p = p->next;
+							s = s->next;
+					}
+
+					return preHead->next;
+			}
+
+			ListNode* sortList(ListNode* head) {
+					//base case
+					if(head == NULL || head->next == NULL){
+							return head;
+					}
+
+					//break ll into 2 halves, after finding mid
+					ListNode* mid = getMid(head);
+
+					ListNode* left = head;
+					ListNode* right = mid->next;
+					mid->next = NULL;
+
+					//recursive calls to sort the two halves
+					left = sortList(left);
+					right = sortList(right);
+
+					//merge the two sorted halves
+					ListNode* answer = merge(left, right);
+
+					return answer;
+			}
+	};
+	```
