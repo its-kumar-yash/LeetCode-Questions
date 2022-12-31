@@ -1,0 +1,58 @@
+Given the head of a singly linked list and two integers left and right where left <= right, reverse the nodes of the list from position left to position right, and return the reversed list.
+
+
+**Iterative Solution**
+* Algorithm :
+		1. Create two pointer, curr and prev
+		2. Skip first (left - 1) nodes
+		3. point begining and new End pointer with prev and curr
+		4. Apply reversal on (right - left + 1) nodes
+		5. make connnections of begin and newEnd to the head and last node of original LL
+		6. return head
+* Time Complexity - O(N)
+* Code :
+	```
+	class Solution {
+	public:
+			ListNode* reverseBetween(ListNode* head, int left, int right) {
+					ListNode* prev = NULL;
+					ListNode* curr = head;
+					ListNode* next;
+
+					//move curr and prev pointers, left-1 times
+					//skip first left - 1 nodes
+					int i = 0;
+					while(curr != NULL && i < left - 1){
+							prev = curr;
+							curr = curr->next;
+							i++;
+					}
+
+					//begining and newEnd pointer
+					ListNode* begin = prev;
+					ListNode* newEnd = curr;
+
+					//now perform reversal on (right - left + 1) nodes
+					int j = 0;
+					while(curr != NULL && j < (right - left + 1)){
+							//simple two pointer reversal algo
+							next = curr->next;
+							curr->next = prev;
+							prev = curr;
+							curr = next;
+							j++;
+					}
+
+					if(begin != NULL){
+							begin->next = prev;
+					}
+					else{
+							head = prev;
+					}
+
+					newEnd->next = curr;
+
+					return head;
+			}
+	};
+	```
