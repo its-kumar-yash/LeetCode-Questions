@@ -1,0 +1,51 @@
+
+Given the head of a linked list, rotate the list to the right by k places.
+
+**1. Iterative Solution**
+* Algorithm :
+		1. reach till end of LL and connect the end node with head of LL, also find length of LL
+		2. find total rotations to be made in LL
+		3. skip first (length - rotations - 1) nodes
+		4.  make newLast points to the newHead
+		5.  return newHead of LL
+* Time Complexity : $$O(N)$$
+* Space Complexity : $$O(1)$$
+* Code :
+	```
+	class Solution {
+	public:
+			ListNode* rotateRight(ListNode* head, int k) {
+					//base case
+					if(k <= 0 || head == NULL || head->next == NULL){
+							return head;
+					}
+
+					//step 1 - reach till end of LL and connect the end node with head of LL, also find length of LL
+					ListNode* last = head;
+					int length = 1;
+
+					while(last->next != NULL){
+							last = last->next;
+							length++;
+					}
+
+					last->next = head;
+
+					//step 2 - find total rotations to be made in LL
+					int rotations = k % length;
+
+					//step 3 - skip first (length - rotations - 1) nodes
+					ListNode* newLast = head;
+					for(int i = 0; i < (length - rotations - 1); i++){
+							newLast = newLast->next;
+					}
+
+					//step 4 - points to the newHead
+					ListNode* newHead = newLast->next;
+					newLast->next = NULL;
+
+					//step 5 - return newHead of LL
+					return newHead;
+			}
+	};
+	```
