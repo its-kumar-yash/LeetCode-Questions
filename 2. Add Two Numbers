@@ -1,0 +1,119 @@
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+
+**1. Iterative Solution (Beats 92%)**
+* Time Complexity - $$O(max(m,n))$$
+* Space Complexity - $$O(max(m,n))$$
+`(m , n are the length of l1 and l2 lists )`
+* Code :
+	```
+	class Solution {
+	public:
+			ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+					//pointers to traverse both list
+					ListNode* first = l1; 
+					ListNode* second = l2;
+
+					//list to store answer
+					ListNode* preHead = new ListNode(-1);
+					//pointer to traverse answer list
+					ListNode* p = preHead;
+
+					//initialize sum and carry
+					int sum = 0;
+					int carry = 0;
+
+					//traversing both the list
+					while(first != NULL && second != NULL){
+
+							//calculating sum with carry
+							sum = first->val + second->val + carry;
+
+							//if sum of current nodes and carry is greater than 9
+							//in this case carry is generated
+							//so adjusting sum and carry according to that 
+							if(sum > 9){
+									carry = sum / 10;
+									sum = sum % 10;
+									// creating a new node of value sum
+									// insert at end in answer list
+									// and move forward p pointer
+									ListNode* temp = new ListNode(sum);
+									p->next = temp;
+									p = p->next;
+							}
+							else{
+									//in this case
+									//simply create a new node, 
+									//and add new node at the end of answer list
+									carry = 0;
+									ListNode* temp = new ListNode(sum);
+									p->next = temp;
+									p = p->next;
+							}
+
+							//move forward both the pointer 
+							first = first->next;
+							second = second->next;
+					}
+
+					// if first list is remaining
+					// do same process as above
+					while(first != NULL){
+							sum = first->val + carry;
+
+							if(sum > 9){
+									carry = sum / 10;
+									sum = sum % 10;
+									ListNode* temp = new ListNode(sum);
+									p->next = temp;
+									p = p->next;
+							}
+							else{
+									carry = 0;
+									ListNode* temp = new ListNode(sum);
+									p->next = temp;
+									p = p->next;
+							}
+
+							first = first->next;
+					}
+
+
+					//if second list is remaining
+					//do same as above process
+					while(second != NULL){
+							sum = second->val + carry;
+							if(sum > 9){
+									carry = sum / 10;
+									sum = sum % 10;
+									ListNode* temp = new ListNode(sum);
+									p->next = temp;
+									p = p->next;
+							}
+							else{
+									carry = 0;
+									ListNode* temp = new ListNode(sum);
+									p->next = temp;
+									p = p->next;
+							}
+
+							second = second->next;
+					}
+
+					//at the end if carry is remaining
+					//create a node of carry
+					//insert at the end of answer list 
+					if(carry != 0){
+							ListNode* temp = new ListNode(carry);
+							p->next = temp;
+							p = p->next;
+					}
+
+					//return next of preHead
+					return preHead->next;
+			}
+	}; 
+	```
