@@ -1,0 +1,211 @@
+You are given two non-empty linked lists representing two non-negative integers. The most significant digit comes first and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+ 
+
+
+
+**Brute Force Approach - By Reversing List**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(1)$$
+```
+class Solution {
+public:
+    ListNode* reverse(ListNode* &head){
+        ListNode* prev = NULL;
+        ListNode* curr = head;
+        ListNode* next = NULL;
+
+        while(curr != NULL){
+            next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+        }
+
+        return prev;
+    }
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode* first = reverse(l1);
+        ListNode* second = reverse(l2);
+
+        //list to store answer
+        ListNode* preHead = new ListNode(-1);
+        //pointer to traverse answer list
+        ListNode* p = preHead;
+
+        //initialize sum and carry
+        int sum = 0;
+        int carry = 0;
+
+        //traversing both the list
+        while(first != NULL && second != NULL){
+
+            //calculating sum with carry
+            sum = first->val + second->val + carry;
+
+            //if sum of current nodes and carry is greater than 9
+            //in this case carry is generated
+            //so adjusting sum and carry according to that 
+            if(sum > 9){
+                carry = sum / 10;
+                sum = sum % 10;
+                // creating a new node of value sum
+                // insert at end in answer list
+                // and move forward p pointer
+                ListNode* temp = new ListNode(sum);
+                p->next = temp;
+                p = p->next;
+            }
+            else{
+                //in this case
+                //simply create a new node, 
+                //and add new node at the end of answer list
+                carry = 0;
+                ListNode* temp = new ListNode(sum);
+                p->next = temp;
+                p = p->next;
+            }
+
+            //move forward both the pointer 
+            first = first->next;
+            second = second->next;
+        }
+
+        // if first list is remaining
+        // do same process as above
+        while(first != NULL){
+            sum = first->val + carry;
+
+            if(sum > 9){
+                carry = sum / 10;
+                sum = sum % 10;
+                ListNode* temp = new ListNode(sum);
+                p->next = temp;
+                p = p->next;
+            }
+            else{
+                carry = 0;
+                ListNode* temp = new ListNode(sum);
+                p->next = temp;
+                p = p->next;
+            }
+
+            first = first->next;
+        }
+
+
+        //if second list is remaining
+        //do same as above process
+        while(second != NULL){
+            sum = second->val + carry;
+            if(sum > 9){
+                carry = sum / 10;
+                sum = sum % 10;
+                ListNode* temp = new ListNode(sum);
+                p->next = temp;
+                p = p->next;
+            }
+            else{
+                carry = 0;
+                ListNode* temp = new ListNode(sum);
+                p->next = temp;
+                p = p->next;
+            }
+
+            second = second->next;
+        }
+
+        //at the end if carry is remaining
+        //create a node of carry
+        //insert at the end of answer list 
+        if(carry != 0){
+            ListNode* temp = new ListNode(carry);
+            p->next = temp;
+            p = p->next;
+        }
+
+        ListNode* newHead = reverse(preHead->next);
+
+        return newHead;
+    }
+};
+```
+
+**Optimized Approach - Using Recursion**
+* Algorithm : 
+		1. adding zeros to the starting of smaller list
+		2. recursive call to add two digits
+		3. updating sum and carry
+		4. insert newNode to the start of the answer list
+		5. return answer head
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(N)$$
+```
+class Solution {
+public:
+    ListNode* addTwoDigits(ListNode* l1, ListNode* l2, int &carry){
+        //base case
+        if(l1 == NULL && l2 == NULL){
+            return NULL;
+        }
+
+        //creating new list
+        ListNode* newNode = new ListNode(-1);
+        //recursive call for next nodes of both list
+        newNode->next = addTwoDigits(l1->next, l2->next, carry);
+        //updating value of new Node
+        newNode->val = (l1->val + l2->val + carry) % 10;
+        //updating carry
+        carry = (l1->val + l2->val + carry) / 10;
+
+        return newNode;
+    }
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        // adding zeros to the start of smaller list
+        ListNode* ptr1 = l1;
+        ListNode* ptr2 = l2;
+
+        while(ptr1 != NULL || ptr2 != NULL){
+            if(ptr1 == NULL){
+                //create a new node with value zero and insert to the start of list 1
+                ListNode* newNode = new ListNode(0);
+                newNode->next = l1;
+                l1 = newNode;
+
+                //move ptr2 forward
+                ptr2 = ptr2->next;
+            }
+            else if(ptr2 == NULL){
+                //create a new node with value zero and insert to the start of list 2
+                ListNode* newNode = new ListNode(0);
+                newNode->next = l2;
+                l2 = newNode;
+
+                //move ptr1 forward
+                ptr1 = ptr1->next;
+            }
+            else{
+                ptr1 = ptr1->next;
+                ptr2 = ptr2->next;
+            }
+        }
+
+        //Main operation
+
+        int carry = 0;
+        ListNode* dummyNode = new ListNode(-1);
+        dummyNode->next = addTwoDigits(l1, l2, carry);
+
+        // if after addition, carry still exist
+        if(carry != 0){
+            ListNode* newNode = new ListNode(carry);
+            newNode->next = dummyNode->next;
+            dummyNode->next = newNode;
+        }
+
+        return dummyNode->next;
+    }
+};
+```
