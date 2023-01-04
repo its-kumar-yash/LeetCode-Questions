@@ -1,0 +1,84 @@
+Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)
+
+
+**Brute Force - By changing values in pair**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(1)$$
+```
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        //base case
+        if(head == NULL || head->next == NULL){
+            return head;
+        }
+
+        ListNode* temp = head;
+
+        //swapping the values of pair of nodes
+        //move temp by skipping node in between
+        while(temp != NULL && temp->next != NULL){
+            swap(temp->val, temp->next->val);
+            temp = temp->next->next;
+        }
+
+        return head;
+    }
+};
+```
+
+**Optimized Solution - Swapping Nodes - 100%**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(1)$$
+```
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        //base case
+        if(head == NULL || head->next == NULL){
+            return head;
+        }
+
+        //creating dummyNode to store the head
+        ListNode* dummyNode = new ListNode(-1);
+        dummyNode->next = head;
+
+        ListNode* prev = dummyNode;
+        ListNode* curr = head;
+
+        while(curr != NULL && curr->next != NULL ){
+            prev->next = curr->next;
+            curr->next = prev->next->next;
+            prev->next->next = curr;
+
+
+            prev = curr;
+            curr = curr->next;
+        }
+
+        return dummyNode->next;
+
+    }
+};
+```
+
+**Recursive Solution - 100%**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(N)$$
+```
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        //base case
+        if(head == NULL || head->next == NULL){
+            return head;
+        }
+
+        ListNode* next = head->next; // storing the head->next address
+        head->next = swapPairs(head->next->next); // recursive call
+        next->next = head;
+
+        return next;
+    }
+};
+```
