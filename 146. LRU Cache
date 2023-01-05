@@ -1,0 +1,114 @@
+Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
+
+Implement the LRUCache class:
+
+LRUCache(int capacity) Initialize the LRU cache with positive size capacity.
+int get(int key) Return the value of the key if the key exists, otherwise return -1.
+void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key.
+The functions get and put must each run in O(1) average time complexity.
+
+
+
+
+**1. Using Doubly LInked List and Unordered Map**
+* [Dry Run](https://docs.google.com/presentation/d/1pXQ50S65Fnmyo93HqA503m3uwxwDspFPlLZRoto_7t4/edit?usp=sharing)
+* Code : 
+```
+//Node class for Doubly Linked List
+class Node{
+    public:
+    int key;
+    int val;
+    Node* prev;
+    Node* next;
+
+    Node(int key, int val){
+        this->key = key;
+        this->val = val;
+        this->prev = NULL;
+        this->next = NULL;
+    }
+};
+
+class LRUCache {
+public:
+
+    //used unordered map to keep track of key - value pair
+    unordered_map<int, Node*> map;
+
+    int capacity;
+
+    //two dummy Node to keep track of starting and ending point of list
+    Node* head = new Node(0,0);
+    Node* tail = new Node(0,0);
+
+    LRUCache(int capacity) {
+        this->capacity = capacity;
+        
+        //connecting head and tail 
+        head->next = tail;
+        tail->prev = head;
+    }
+
+    //function to insert new node next to head ( insert at front ) 
+    void insert(Node* curr){
+        //connections to insert a node
+        curr->next = head->next;
+        head->next->prev = curr;
+        head->next = curr;
+        curr->prev = head;
+
+        //update map accordingly
+        map[curr->key] = curr;
+    }
+
+    //function to remove a node
+    void remove(Node* curr){
+        
+        //update map
+        map.erase(curr->key);
+
+        //connections to remove a node
+        curr->next->prev = curr->prev;
+        curr->prev->next = curr->next;
+
+    }
+    
+    int get(int key) {
+        //if key not present , just return -1 
+        if(map.find(key) == map.end()){
+            return -1;
+        }
+
+        //if key is present , than update the node and return the value associated with the key
+        // for update first we remove the node and then add at start of list with the help of insert function
+        Node* curr = map[key];
+        remove(curr);
+        insert(curr);
+
+        return curr->val;
+    }
+    
+    void put(int key, int value) {
+        //if key is already present than we have to update it 
+       // similiary we first remove and then add node in front with the help of insert helper 
+       if(map.find(key) != map.end()){
+           remove(map[key]);
+       }
+
+       // if size is full then we have to remove the least recently used node
+       if(map.size() == capacity){
+           remove(tail->prev);
+       }
+
+       insert(new Node(key, value));
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
+```
