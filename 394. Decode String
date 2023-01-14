@@ -1,0 +1,95 @@
+Given an encoded string, return its decoded string.
+
+The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
+
+You may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc. Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, k. For example, there will not be input like 3a or 2[4].
+
+The test cases are generated so that the length of the output will never exceed 105.
+
+
+
+**1. Brute Force - 100%**
+* Time Complexity - $$O(N^2)$$
+* Space Complexity - $$O(N)$$
+```
+class Solution {
+public:
+    string decodeString(string s) {
+        int n = s.length();
+        //created  char type stack
+        stack<char> st;
+
+        //iterate through the given string
+        for(int i = 0; i < n; i++){
+            //push everything expect closing bracket
+            if(s[i] != ']'){
+                st.push(s[i]);
+            }
+            //if closing bracket occurs
+            else if(s[i] == ']'){
+                //step 1 - pop till you find open bracket 
+                //and mantain temp string to store string within brackets
+
+                string temp = "";
+                
+                //pop till stack not empty and you find open bracket
+                while(!st.empty() && st.top() != '['){
+                    char ch = st.top();
+                    temp += ch;
+                    st.pop();
+                }
+                //pop out open bracket
+                st.pop();
+
+                //cout<<"Temp : "<<temp<<endl;
+                //edge case
+                reverse(temp.begin(), temp.end());
+
+                //step 2 - Find num to multipy the above string nums times
+                //by popping till stack not empty and top is between 0 & 9
+                //mantain num
+
+                string num = "";
+
+                while(!st.empty() && st.top() >= '0' && st.top() <= '9'){
+                    char ch = st.top();
+                    num += ch ;
+                    st.pop();
+                } 
+
+                //edge case
+                reverse(num.begin(), num.end());
+
+                //cout<<"NUM :"<<num<<endl;
+
+                //convert num into integer
+                int cnt = stoi(num); 
+
+
+                //step 3 - Again push the string taken out above , nums times into stack
+                for(int i = 0; i < cnt; i++){
+                    for(int i = 0; i < temp.length(); i++){
+                        st.push(temp[i]);
+                    }
+                }
+
+            }
+        }
+
+        //at the end
+        //store answer by popping everything from stack
+        string ans = "";
+
+        while(!st.empty()){
+            char top = st.top();
+            ans += top;
+            st.pop();
+        }
+
+        //edge case
+        reverse(ans.begin(), ans.end());
+
+        return ans;
+    }
+};
+```
