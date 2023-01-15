@@ -1,0 +1,101 @@
+We are given an array asteroids of integers representing asteroids in a row.
+
+For each asteroid, the absolute value represents its size, and the sign represents its direction (positive meaning right, negative meaning left). Each asteroid moves at the same speed.
+
+Find out the state of the asteroids after all collisions. If two asteroids meet, the smaller one will explode. If both are the same size, both will explode. Two asteroids moving in the same direction will never meet.
+
+
+
+**Using Array Based Stack**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(1)$$
+* Algorithm :
+		1. create a vector to store resulting element
+		2. iterate through given array
+		3. Condition for Collision
+		4. asteroid should be moving in left (-ive) and stack top should be in right direction (+ive)
+		5.  if the difference of collision is 
+		6.  Positive -> asteroid losses and stack top wins -> make asteroid zero
+		7.  Negative -> asteroid wins and stack top losses -> pop stack top
+		8.  Zero -> Both Losses -> make asteroid zero and pop stack top
+		9.  at end if asteroid is not zero push it into stack
+```
+class Solution {
+public:
+    vector<int> asteroidCollision(vector<int>& asteroids) {
+        int n = asteroids.size();
+        //using array based stack
+        vector<int> st;
+
+        //iterate through given array
+        for(int a : asteroids){
+
+            //condition for collision
+            while( !st.empty() && a < 0 && st.back() > 0){
+                int diff = a + st.back(); //storing difference of collision
+
+                if(diff < 0){
+                    st.pop_back();
+                }
+                else if(diff > 0){
+                    a = 0;
+                }
+                else{
+                    a = 0;
+                    st.pop_back();
+                }
+            }
+
+            if( a != 0){
+                st.push_back(a);
+            }
+        }
+
+        return st;
+    }
+};
+```
+
+**Using Stack **
+```
+class Solution {
+public:
+    vector<int> asteroidCollision(vector<int>& asteroids) {
+        int n = asteroids.size();
+        stack<int> st;
+
+        for(int i = 0; i < n; i++){
+            //condition for colision
+            while(!st.empty() && asteroids[i] < 0 && st.top() > 0){
+                int diff = asteroids[i] + st.top();
+
+                if(diff < 0){
+                    st.pop();
+                }
+                else if(diff > 0){
+                    asteroids[i] = 0;
+                }
+                else{
+                    asteroids[i] = 0;
+                    st.pop();
+                }
+            }
+
+            if(asteroids[i] != 0){
+                st.push(asteroids[i]);
+            }
+        }
+
+        vector<int> ans;
+
+        while(!st.empty()){
+            ans.push_back(st.top());
+            st.pop();
+        }
+
+        reverse(ans.begin(), ans.end());
+
+        return ans;
+    }
+};
+```
