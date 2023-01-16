@@ -1,0 +1,172 @@
+Design your implementation of the circular double-ended queue (deque).
+
+Implement the MyCircularDeque class:
+
+MyCircularDeque(int k) Initializes the deque with a maximum size of k.
+boolean insertFront() Adds an item at the front of Deque. Returns true if the operation is successful, or false otherwise.
+boolean insertLast() Adds an item at the rear of Deque. Returns true if the operation is successful, or false otherwise.
+boolean deleteFront() Deletes an item from the front of Deque. Returns true if the operation is successful, or false otherwise.
+boolean deleteLast() Deletes an item from the rear of Deque. Returns true if the operation is successful, or false otherwise.
+int getFront() Returns the front item from the Deque. Returns -1 if the deque is empty.
+int getRear() Returns the last item from Deque. Returns -1 if the deque is empty.
+boolean isEmpty() Returns true if the deque is empty, or false otherwise.
+boolean isFull() Returns true if the deque is full, or false otherwise.
+
+## Facebook Interview Question
+**1. Implementing Using Array**
+* Algorithm :
+		1. Queue Full Condition -> ( front == 0 && rear == size - 1 ) || ( front == rear + 1 )
+		2. Queue Empty Condition -> ( front == -1 && rear == -1 )
+		3. EnQueue -> Cases -> First Element , Cyclic Nature , Normal Flow
+		5. DeQueue -> Cases -> Single Element , Cyclic Nature , Normal Flow 
+* Time Complexity : $$O(1)$$
+```
+class MyCircularDeque {
+public:
+    //data members
+    int *arr;
+    int front;
+    int rear;
+    int size;
+
+    //behaviour
+    MyCircularDeque(int k) {
+        //initialization
+        this->size = k;
+        arr = new int[size];
+        front = rear = -1;
+    }
+    //PUSH FRONT
+    bool insertFront(int value) {
+        //condition for overflow condition
+        if(isFull()){
+            return false;
+        }
+        //first element to insert
+        else if(front == -1){
+            front = rear = 0;
+        }
+        //cyclic nature
+        else if(front == 0 && rear != size - 1){
+            front = size - 1;
+        }
+        //normal flow
+        else{
+            front--;
+        }
+
+        arr[front] = value;
+        return true;
+    }
+    //PUSH BACK
+    bool insertLast(int value) {
+        //check for overflow condition
+        if(isFull()){
+            return false;
+        }
+        //first element to insert 
+        else if(front == -1){
+            front = rear = 0;
+        }
+        //cyclic nature
+        else if(rear == size - 1 && front != 0){
+            rear = 0;
+        }
+        //normal flow
+        else{
+            rear++;
+        }
+
+        arr[rear] = value;
+        return true;
+    }
+    //POP FRONT
+    bool deleteFront() {
+        //check for underflow condition
+        if(isEmpty()){
+            return false;
+        }
+
+        int val = arr[front];
+        arr[front] = -1;
+
+        //single element present
+        if(front == rear){
+            front = rear = -1;
+        }
+        //cyclic nature
+        else if(front == size - 1){
+            front = 0;
+        }
+        //normal flow
+        else{
+            front++;
+        }
+
+        return true;
+    }
+    //POP REAR
+    bool deleteLast() {
+        //check underflow condition
+        if(isEmpty()){
+            return false;
+        }
+        
+        int val = arr[rear];
+        arr[rear] = -1;
+
+        //single element present 
+        if(front == rear){
+            front = rear = -1;
+        }
+        //cyclic flow
+        else if(rear == 0){
+            rear = size - 1;
+        } 
+        //normal flow
+        else{
+            rear--;
+        }
+
+        return true;
+    }
+    
+    int getFront() {
+        if(isEmpty()){
+            return -1;
+        }
+        else{
+            return arr[front];
+        }
+    }
+    
+    int getRear() {
+        if(isEmpty()){
+            return -1;
+        }
+        else{
+            return arr[rear];
+        }
+    }
+    
+    bool isEmpty() {
+        //condition for empty queue
+        if(front == -1 && rear == -1){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    bool isFull() {
+        //condition for queue full
+        if( (front == 0 && rear == size - 1) || (front == rear + 1 )){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+};
+```
