@@ -1,0 +1,143 @@
+Implement a first in first out (FIFO) queue using only two stacks. The implemented queue should support all the functions of a normal queue (push, peek, pop, and empty).
+
+Implement the MyQueue class:
+
+void push(int x) Pushes element x to the back of the queue.
+int pop() Removes the element from the front of the queue and returns it.
+int peek() Returns the element at the front of the queue.
+boolean empty() Returns true if the queue is empty, false otherwise.
+Notes:
+
+You must use only standard operations of a stack, which means only push to top, peek/pop from top, size, and is empty operations are valid.
+Depending on your language, the stack may not be supported natively. You may simulate a stack using a list or deque (double-ended queue) as long as you use only a stack's standard operations.
+
+
+
+**1. Using Two Stack Without Recursion - 100%**
+* Algorithm :
+	1. PUSH : Use stack 1 to push element
+	2. POP : pop all element from stack 1 and push into stack 2, then pop the topmost element, reverse the process with remaining element of stack 2
+	3.  PEEK : same as POP just don't pop the top element from stack 2
+	4.  EMPTY : only check if stack 1 is empty or not  
+```
+class MyQueue {
+public:
+    // initialize two stack using stl
+    stack<int> st1;
+    stack<int> st2; 
+    MyQueue() {
+    }
+    
+    void push(int x) {
+        //use stack 1 to push element
+        st1.push(x);
+    }
+    
+    int pop() {
+        //base case
+        if(st1.empty()){
+            return -1;
+        }
+        //pop all the element from stack 1 and push them into stack 2
+        // return the top of stack 2
+        while(!st1.empty()){
+            int top = st1.top();
+            st1.pop();
+            st2.push(top);
+        }
+        //save the top of stack 2 and pop it from stack
+        int result = st2.top();
+        st2.pop();
+
+        //Again push the remaining element from stack 2 to stack 1
+        while(!st2.empty()){
+            int top = st2.top();
+            st2.pop();
+            st1.push(top);
+        }
+
+        return result;  
+    }
+    
+    int peek() {
+        //base case
+        if(st1.empty()){
+            return -1;
+        }
+        //pop all the element from stack 1 and push them into stack 2
+        // return the top of stack 2
+        while(!st1.empty()){
+            int top = st1.top();
+            st1.pop();
+            st2.push(top);
+        }
+        //save the top of stack 2
+        int result = st2.top();
+
+        //Again push the remaining element from stack 2 to stack 1
+        while(!st2.empty()){
+            int top = st2.top();
+            st2.pop();
+            st1.push(top);
+        }
+
+        return result; 
+    }
+    
+    bool empty() {
+        //just check if stack 1 is empty or not
+        return st1.empty();
+    }
+};
+```
+
+**2. Using One Stack & Recursion - 100%**
+* Algorithm :
+	1. PUSH : making push costlier by using insert at bottom approach
+	2. POP : simple stack pop
+	3.  PEEK : simply return stack top
+	4.  EMPTY : only check if stack is empty or not  
+```
+class MyQueue {
+public:
+    //initialize stack 
+    stack<int> st;
+
+    MyQueue() {
+
+    }
+    //Recursive Approach to insert new element at the bottom 
+    void push(int x) {
+        //base case
+        if(st.empty()){
+            st.push(x);
+            return;
+        }
+
+        //save the top and remove from the stack
+        int top = st.top();
+        st.pop();
+
+        push(x); //recursive call for remaining element
+
+        st.push(top); //push the saved element into stack again
+    }
+    
+    int pop() {
+        //simply return top of stack and pop the stack top
+        int top = st.top();
+        st.pop();
+        return top;
+    }
+    
+    int peek() {
+        //return stack top
+        return st.top();        
+    }
+    
+    bool empty() {
+        //return if stack is empty or not
+        return st.empty();
+    }
+};
+```
