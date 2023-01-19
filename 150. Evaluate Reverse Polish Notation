@@ -1,0 +1,74 @@
+You are given an array of strings tokens that represents an arithmetic expression in a Reverse Polish Notation.
+
+Evaluate the expression. Return an integer that represents the value of the expression.
+
+Note that:
+
+The valid operators are '+', '-', '*', and '/'.
+Each operand may be an integer or another expression.
+The division between two integers always truncates toward zero.
+There will not be any division by zero.
+The input represents a valid arithmetic expression in a reverse polish notation.
+The answer and all the intermediate calculations can be represented in a 32-bit integer.
+
+
+**Postfix Evaluation**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(N)$$
+```
+class Solution {
+public:
+    int operations(int val1, int val2, string op){
+        if(op == "+"){
+            return val1 + val2;
+        }
+        else if(op == "-"){
+            return val1 - val2;
+        }
+        else if(op == "*"){
+            return val1 * val2;
+        }
+        else{
+            return val1 / val2; // for division
+        }
+    }
+
+    int evalRPN(vector<string>& tokens) {
+        //step 1 - create a stack
+        stack<int> st;
+
+        //step 2 - iterate through tokens
+        for(int i = 0; i < tokens.size(); i++){
+            //step 3 - check for following condition
+
+            string ch = tokens[i];
+
+            //if operand occurs, push into stack
+            if(ch != "+" && ch != "-" && ch != "*" && ch != "/"){
+                st.push(stoi(ch));
+            }
+
+            //if it is operator pop two operand from stack
+            else if(ch == "+" || ch == "-" || ch == "*" || ch == "/"){
+                //check for underflow condition
+                if(!st.empty()){
+                    //pop two operands from the stack 
+                    int val2 = st.top();
+                    st.pop();
+                    int val1 = st.top();
+                    st.pop();
+
+                    //evaluate them with the operator
+                    int result = operations(val1, val2, ch);
+
+                    //push the result again into the stack
+                    st.push(result);
+                }
+            }
+        }
+
+        //answer is stack top
+        return st.top();
+    }
+};
+```
