@@ -1,0 +1,256 @@
+Given a string s representing a valid expression, implement a basic calculator to evaluate it, and return the result of the evaluation.
+
+Note: You are not allowed to use any built-in function which evaluates strings as mathematical expressions, such as eval().
+
+
+
+
+**Using Two Stack - Infix Evaluation**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(N)$$
+```
+class Solution {
+public:
+    //function to check precedence of operators
+    int precedence(char op){
+        if(op == '+' || op == '-'){
+            return 2;
+        }
+        else if(op == '*' || op == '/'){
+            return 3; // for '*' or '/' -> precedence is 3
+        }
+        else{
+            return 1;
+        }
+    }
+    //functions to perform various arithmetic operations
+    int operations(int val1, int val2, char op){
+        if( op == '+' ){
+            return val1 + val2;
+        }
+        else if( op == '-'){
+            return val1 - val2;
+        }
+        else if( op == '*'){
+            return val1 * val2;
+        }
+        else{
+            return val1 / val2;
+        }
+    }
+    //function to redefine the string
+    //for handling urnary operators 
+    //e.g. : 1 - ( - 2) => 0 + 1 - (0 - 2) 
+    string redefine(string str){
+        //intializing a string 
+        string s = "0+";
+
+        for(int i = 0; i < str.length(); i++){
+            //if str[i] is digit or open or closing bracket
+            if((str[i] >= '0' && str[i] <= '9') || str[i] == '(' || str[i] == ')'){
+                s.push_back(str[i]);
+            }
+            //if str[i] is +ive sign
+            //check the last element of string
+            // + + => +
+            // - + => -
+            // ( + => (
+            else if(str[i] == '+'){
+                if(s.back() == '+' || s.back() =='-' || s.back() == '('){
+                    continue;
+                }
+                else{
+                    s.push_back(str[i]);
+                }
+            }
+            //if str[i] is -ive sign
+            else if(str[i] == '-'){
+                //if open bracket just append 0 before the negative sign
+                if(s.back() == '('){
+                    s.push_back('0');
+                    s.push_back(str[i]);
+                }
+                //if string contains + sign, change the sign to -ive
+                else if(s.back() == '+'){
+                    s[s.size() - 1] = '-';
+                }
+                //if string contains -ive, change the sign to +ive 
+                else if(s.back() == '-'){
+                    s[s.size() - 1] = '+';
+                }
+                //else just append to the string  
+                else{
+                   s.push_back(str[i]); 
+                } 
+            }
+        }
+
+        return s;
+    }
+
+    int calculate(string s) {
+
+        s = redefine(s);
+
+        //step 1 - create two stack for operand and operator
+        stack<int> oprand; //stack for operands
+        stack<char> optor; //stack for operators
+
+        for(int i = 0; i < s.length(); i++){
+            char ch = s[i];
+            //step 2 - check for following cases
+
+            //if ch is operand, push into operand stack
+            if(isdigit(ch)){
+                //e.g. 321 - 1
+                int val = 0;
+                //iterate to retrive all the digits of the number
+                while( i < s.length() && isdigit(s[i])){
+                    val = val * 10 + (s[i] - '0');
+                    i++;
+                }
+                i--;
+
+                oprand.push(val);
+            }
+            //if ch is opening bracket, push into operator stack
+            else if(ch == '('){
+                optor.push(ch);
+            }
+            //if ch is closing bracket, pop till you get opening bracket at stack top
+            //at end pop the stack top also
+            else if(ch == ')'){
+                while(!optor.empty() && optor.top() != '('){
+                    //pop two operand from operand stack
+                    int val2 = oprand.top();
+                    oprand.pop();
+                    int val1 = oprand.top();
+                    oprand.pop();
+
+                    //pop the operator from operator stack
+                    char op = optor.top();
+                    optor.pop();
+            
+                    //perform suitable operation
+                    int res = operations(val1, val2, op);
+
+                    //push the res again into operand stack
+                    oprand.push(res);
+                }
+                if(optor.top() == '('){
+                    optor.pop();    
+                }
+            }
+            //if ch is operator, check for precedence of operator stack top
+            //pop operator if it has same or greater precedence than ch
+            else{
+                while(!optor.empty() && precedence(s[i]) <= precedence(optor.top())){
+                    //pop the operator from operator stack
+                    char op = optor.top();
+                    optor.pop();
+
+                    //pop two operand from operand stack
+                    int val2 = oprand.top();
+                    oprand.pop();
+                    int val1 = oprand.top();
+                    oprand.pop();
+
+                    //perform suitable operation
+                    int res = operations(val1, val2, op);
+
+                    //push the res again into operand stack
+                    oprand.push(res);
+                }
+                //at end push the current operator
+                optor.push(s[i]);
+            }
+        }
+
+        //at end check if operator stack is empty
+        while(!optor.empty()){
+            //pop two operand from operand stack
+            int val2 = oprand.top();
+            oprand.pop();
+            int val1 = oprand.top();
+            oprand.pop();
+
+            //pop the operator from operator stack
+            char op = optor.top();
+            optor.pop();
+            
+            //perform suitable operation
+            int res = operations(val1, val2, op);
+
+            //push the res again into operand stack
+            oprand.push(res);
+        }
+
+        return oprand.top();
+    }
+};
+```
+
+**Using Single Stack**
+```
+class Solution {
+public:
+    int calculate(string s) {
+        int curr = 0; // to store the ans of current operation
+        int ans = 0; // to store overall answer of expression
+        int sign = 1; // to handle signs - initialized with 1 for +ive sign
+
+        stack<int> st;  
+
+        for(int i = 0; i < s.length(); i++){
+
+            if(isdigit(s[i])){
+                int val = 0;
+                //to retreive all the digit of the number
+                while(i < s.length() && isdigit(s[i])){
+                    val = val*10 + (s[i] - '0');
+                    i++;
+                }
+                i--;
+
+                curr = val;
+                //store the ans so far
+                curr = curr * sign;
+                ans += curr;
+                //reset sign and answer
+                sign = 1;
+                curr = 0;
+            }
+
+            else if(s[i] == '+'){
+                sign = 1;
+            }
+
+            else if(s[i] == '-'){
+                sign = -1; // -1 represent negative sign
+            }
+
+            else if(s[i] == '('){
+                st.push(ans); //store the ans so far into stack
+                st.push(sign); // store the upcoming sign 
+                //reset answer and sign
+                ans = 0;
+                sign = 1;
+            }
+
+            else if(s[i] == ')'){
+                //pop the prev sign 
+                int prevSign = st.top();
+                st.pop();
+                ans = ans * prevSign;
+                //pop prev answer
+                int prevAns = st.top();
+                st.pop();
+                //add to the overall ans
+                ans += prevAns;
+            }
+        }
+
+        return ans;
+    }
+};
+```
