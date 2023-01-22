@@ -1,0 +1,113 @@
+Given the root of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).
+
+
+
+**Using Queue - TLE**
+```
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+
+        if(root == NULL){
+            return {};
+        }
+
+        vector<vector<int>> result; // to store final result
+        vector<int> temp; //to store values of each level 
+
+        //creating a queue of Tree Node type
+        queue<TreeNode*> q;
+        //and push root node also NULL value
+        // here NULL works as seperator between different levels
+        q.push(root);
+        q.push(NULL);
+
+        //run loop until queue is empty
+        while(!q.empty()){
+            //store queue front and pop it
+            TreeNode* frontq = q.front();
+            q.pop();
+            
+
+            //whenever u encountered NULL, means seperator occurs 
+            //so push the temp into final result and clear temp
+            //also if q is not empty push another NULL
+            if(frontq == NULL){
+                result.push_back(temp);
+                temp.clear();
+                if(!q.empty()){
+                    q.push(NULL);
+                }
+            }
+            else{
+                //push stored value into temp vector
+                temp.push_back(frontq->val);
+            }
+
+
+            //Now push left and right children of front into queue
+            if(frontq && frontq->left){
+                q.push(frontq->left);
+            }
+            if(frontq && frontq->right){
+                q.push(frontq->right);
+            }
+
+        }
+
+        return result; 
+    }
+};
+```
+
+**Optimized Code **
+* Same Approach just using an extra for loop 
+```
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+
+        vector<vector<int>> result; // to store final result
+
+        if(root == NULL){
+            return result;
+        }
+        //creating a queue of Tree Node type
+        queue<TreeNode*> q;
+        //and push root node also NULL value
+        q.push(root);
+    
+
+        //run loop until queue is empty
+        while(!q.empty()){
+
+
+            vector<int> level;
+            int n = q.size();
+
+            //with each iteration, queue contains the values of each level
+            for(int i = 0; i < n; i++){
+                //store queue front and pop it
+                TreeNode* frontq = q.front();
+                q.pop();
+
+                //Now push left and right children of front into queue
+                if(frontq->left != NULL){
+                    q.push(frontq->left);
+                }
+                if(frontq->right != NULL){
+                    q.push(frontq->right);
+                }
+
+                level.push_back(frontq->val);
+            }
+
+            //after loop ends just push level into result vector
+            result.push_back(level);
+
+        }
+
+        return result; 
+    }
+};
+```
