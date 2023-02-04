@@ -1,0 +1,82 @@
+Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
+
+Basically, the deletion can be divided into two stages:
+
+Search for a node to remove.
+If the node is found, delete the node.
+
+
+**Using Recursion**
+* Time Complexity - $$O(LogN)$$
+```
+class Solution {
+public:
+    //function to find minimum in BST
+    TreeNode* findMin(TreeNode* root){
+
+        while(root->left != NULL){
+            root = root->left;
+        }
+
+        return root;
+    }
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        //base case
+        if(root == NULL){
+            return NULL;
+        }
+
+        //Step 1 - Search the target node in the BST
+
+        //target condition
+        if(root->val == key){
+            
+            //Case 1 : 0 child
+            if(root->left == NULL && root->right == NULL){
+                delete root;
+                return NULL;
+            }
+
+            //Case 2 : 1 child
+
+            //1 left child
+            if(root->left != NULL && root->right == NULL){
+                //save the left node -> delete root node -> return saved node
+                TreeNode* temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            //2 right child
+            if(root->left == NULL && root->right != NULL){
+                //save the right node -> delete root node -> return saved node
+                TreeNode* temp = root->right;
+                delete root;
+                return temp;
+            }
+
+            //Case 3 : 2 child
+            if(root->left != NULL && root->right != NULL){
+                // find the min value in the right sub tree(inorder successor)
+                // replace the root value with successor
+                // delete the successor
+                int minValue = findMin(root->right)->val;
+                root->val = minValue;
+                root->right = deleteNode(root->right, minValue);
+
+                return root;
+            }
+        }
+        //search in left sub tree
+        if(root->val > key){
+            root->left = deleteNode(root->left, key);
+            return root;
+        }   
+        //search in right sub tree
+        else{
+            root->right = deleteNode(root->right, key);
+            return root;
+        }
+    }
+};
+```
