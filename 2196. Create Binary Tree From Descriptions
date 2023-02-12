@@ -1,0 +1,95 @@
+You are given a 2D integer array descriptions where descriptions[i] = [parenti, childi, isLefti] indicates that parenti is the parent of childi in a binary tree of unique values. Furthermore,
+
+If isLefti == 1, then childi is the left child of parenti.
+If isLefti == 0, then childi is the right child of parenti.
+Construct the binary tree described by descriptions and return its root.
+
+The test cases will be generated such that the binary tree is valid.
+
+
+
+
+**Using HashMap & Set**
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(N)$$
+```
+class Solution {
+public:
+    TreeNode* createBinaryTree(vector<vector<int>>& descriptions) {
+        //int -> Node (mapping for each node)
+        unordered_map<int, TreeNode*> childToParent;
+        //set for storing child nodes
+        set<int> childNode;
+
+        for(auto d : descriptions){
+            //extracting 
+            //parentNode -> childNode -> isLeft
+            int parentInt = d[0];
+            int childInt = d[1];
+            int isLeft = d[2];
+
+            //now insert the child int value into childNode set
+            childNode.insert(childInt);
+
+            //firstly, check if parentInt value exist in map or not
+            //if exist, extract Node from map
+            //otherwise create new parent node
+            TreeNode* parentNode;
+            if(childToParent.find(parentInt) != childToParent.end()){
+                parentNode = childToParent[parentInt];
+            }
+            else{
+                parentNode = new TreeNode(parentInt);
+            }
+
+            //for left child
+            if(isLeft == 1){
+                //find childInt in map
+                //extract Node from map
+                if(childToParent.find(childInt) != childToParent.end()){
+                    parentNode->left = childToParent[childInt];
+                }
+                else{
+                    parentNode->left = new TreeNode(childInt);
+                }
+                //insert childint and childNode into map
+                childToParent[childInt] = parentNode->left;
+            }
+            //for right child
+            else{
+                //find childInt in map
+                //extract Node from map
+                if(childToParent.find(childInt) != childToParent.end()){
+                    parentNode->right = childToParent[childInt];
+                }
+                else{
+                    parentNode->right = new TreeNode(childInt);
+                }
+                //insert childint and childNode into map
+                childToParent[childInt] = parentNode->right;
+            }
+
+            //at end, insert childint and childNode into map 
+            childToParent[parentInt] = parentNode;
+        }
+
+        //Now Finding root Node
+        int root = -1;
+
+        //root node is the node which is not present is childNode set
+        for(auto i : childToParent){
+            if(childNode.find(i.first) == childNode.end()){
+                root = i.first;
+                break;
+            }
+        }
+
+        if(root == -1){
+            return NULL;
+        }
+
+        //extracting root value
+        return childToParent[root];
+    }
+};
+```
