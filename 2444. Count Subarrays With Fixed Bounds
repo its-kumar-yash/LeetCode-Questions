@@ -1,0 +1,61 @@
+You are given an integer array nums and two integers minK and maxK.
+
+A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
+
+The minimum value in the subarray is equal to minK.
+The maximum value in the subarray is equal to maxK.
+Return the number of fixed-bound subarrays.
+
+A subarray is a contiguous part of an array.
+
+
+
+**Two Pointer - Microsoft - Very IMP - Good Ques**
+* Algo : 
+			 1. initialize three variables, maxKpos, minKpos, culpritIndex with -1
+			 2. now for every value in arr check following
+													 * check if it is culpritIndex -> update culpritIndex
+													 * check if it is maxK - > update maxKpos
+													 * check if it is minK - > update minKpos
+													 * find smaller = min(maxKpos, minKpos);
+													 * make temp = smaller - culpritIndex   
+													 * ans += (temp <= 0) ? 0 : temp;
+			3. return ans
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(1)$$
+* Code : 
+	```
+	class Solution {
+	public:
+			long long countSubarrays(vector<int>& nums, int minK, int maxK) {
+					//initialize three variables with -1
+					int maxKPosition = -1;
+					int minKPosition = -1;
+					int culpritIndex = -1;
+
+					int  n = nums.size();
+					long long ans = 0;
+
+					for(int i = 0; i < n; i++){
+							//check for culpritIndex
+							if(nums[i] < minK || nums[i] > maxK){
+									culpritIndex = i;
+							}
+							//check for maxK
+							if(nums[i] == maxK){
+									maxKPosition = i;
+							}
+
+							if(nums[i] == minK){
+									minKPosition = i;
+							}
+
+							long long smaller = min(maxKPosition, minKPosition);
+							long long temp = smaller - culpritIndex;
+							ans += (temp <= 0) ? 0 : temp; 
+					}
+
+					return ans;
+			}
+	};
+	```
