@@ -1,0 +1,286 @@
+A trie (pronounced as "try") or prefix tree is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.
+
+Implement the Trie class:
+
+Trie() Initializes the trie object.
+void insert(String word) Inserts the string word into the trie.
+boolean search(String word) Returns true if the string word is in the trie (i.e., was inserted before), and false otherwise.
+boolean startsWith(String prefix) Returns true if there is a previously inserted string word that has the prefix prefix, and false otherwise.
+
+
+**1. Implementation Using Babbar's Method - Recursive**
+```
+//to implement TrieNode
+class TrieNode{
+    public:
+    char ch;
+    TrieNode* children[26]; //assumming character between a - z
+    bool isTerminal; 
+
+    //constructor
+    TrieNode(char ch){
+        this->ch = ch;
+        
+        //initially all children are NULL
+        for(int i = 0; i < 26; i++){
+            children[i] = NULL;
+        }
+
+        isTerminal = false;
+    }
+};
+
+class Trie {
+public:
+
+    //creating root node
+    TrieNode* root;
+
+    Trie() {
+        root = new TrieNode('\0'); // initializing it with null character    
+    }
+
+    //function to implement insertion in trie
+    void insertUtilWord(TrieNode* root, string word){
+        //base case
+        if(word.length() == 0){
+            root->isTerminal = true;
+            return;
+        }
+
+        //finding index
+        int index = word[0] - 'a';
+        TrieNode* child;
+
+        //if present
+        if(root->children[index] != NULL){
+            child = root->children[index];
+        }
+        //absent
+        else{
+            child = new TrieNode(word[0]);
+            root->children[index] = child;
+        }
+
+        //recursive call for rest
+        insertUtilWord(child, word.substr(1));
+    }
+    
+    void insert(string word) {
+        insertUtilWord(root, word);
+    }
+
+    //function to implement searching in trie
+    bool searchUtilWord(TrieNode* root, string word){
+        //base case
+        if(word.length() == 0){
+            return root->isTerminal;
+        }
+
+        int index = word[0] - 'a';
+        TrieNode* child;
+
+        if(root->children[index] != NULL){
+            child = root->children[index];
+        }
+        else{
+            return false;
+        }
+
+        return searchUtilWord(child, word.substr(1));
+    }
+    
+    bool search(string word) {
+        return searchUtilWord(root, word);
+    }
+    
+    //function to implement starts With
+    bool startsWithUtil(TrieNode* root, string prefix){
+        //base case
+        if(prefix.length() == 0){
+            return true; // if string completed means its present in the trie
+        }
+
+        int index = prefix[0] - 'a';
+        TrieNode* child;
+
+        if(root->children[index] != NULL){
+            child = root->children[index];
+        }
+        else{
+            return false;
+        }
+
+        return startsWithUtil(child, prefix.substr(1));
+    }
+
+    bool startsWith(string prefix) {
+        return startsWithUtil(root, prefix);
+    }
+};
+```
+
+
+**2. Method 2 - Iterative - 90%**
+```
+//To implement Trie Node
+class TrieNode{
+    public:
+    TrieNode* children[26];
+    bool isEnd;
+
+    TrieNode(){
+        for(int i = 0; i < 26; i++){
+            children[i] = NULL;
+        }
+
+        isEnd = false;
+    }
+};
+
+class Trie {
+public:
+    TrieNode* root;
+
+    Trie() {
+        root = new TrieNode();    
+    }
+    
+    void insert(string word) {
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.length(); i++){
+            int idx = word[i] - 'a';
+            //if not present
+            if(curr->children[idx] == NULL){
+                TrieNode* child = new TrieNode();
+                curr->children[idx] = child;
+            }
+
+            curr = curr->children[idx];
+        }
+
+        curr->isEnd = true;
+    }
+    
+    bool search(string word) {
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.length(); i++){
+            int idx = word[i] - 'a';
+
+            if(curr->children[idx] == NULL){
+                return false;
+            }
+
+            curr = curr->children[idx];
+        }
+
+        return curr->isEnd;
+    }
+    
+    bool startsWith(string prefix) {
+        TrieNode* curr = root;
+
+        for(int i = 0; i < prefix.length(); i++){
+            int idx = prefix[i] - 'a';
+
+            if(curr->children[idx] == NULL){
+                return false;
+            }
+
+            curr = curr->children[idx];
+        }
+
+        return true;
+    }
+};
+```
+
+**3. Industry Level Coding**
+```
+class TrieNode{
+    public:
+    TrieNode* links[26];
+    bool isLeaf;
+
+    TrieNode(){
+        for(int i = 0; i < 26; i++){
+            links[i] = NULL;
+        }
+        isLeaf = false;
+    }
+
+    //to check particular character present in trie or not
+    bool containsKey(char ch){
+        return (links[ch - 'a'] != NULL);
+    }
+
+    //to get trie for a particular char
+    TrieNode* get(char ch){
+        return links[ch - 'a'];
+    }
+
+    //to insert node value
+    void put(char ch, TrieNode* node){
+        links[ch - 'a'] = node;
+    }
+
+    //to set terminal flag
+    void setEnd(){
+        isLeaf = true;
+    }
+
+    //to get value of terminal flag
+    bool isEnd(){
+        return isLeaf;
+    }
+};
+class Trie {
+public:
+    TrieNode* root;
+
+    Trie() {
+        root = new TrieNode();    
+    }
+    
+    void insert(string word) {
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.length(); i++){
+            char ch = word[i];
+            if(!curr->containsKey(ch)){
+                curr->put(ch, new TrieNode());
+            }
+            curr = curr->get(ch);
+        }
+
+        curr->setEnd();
+    }
+    
+    bool search(string word) {
+        TrieNode* curr = root;
+        for(int i = 0; i < word.length(); i++){
+            char ch = word[i];
+            if(!curr->containsKey(ch)){
+                return false;
+            }
+            curr = curr->get(ch);
+        }
+
+        return curr->isEnd();
+    }
+    
+    bool startsWith(string prefix) {
+        TrieNode* curr = root;
+        for(int i = 0; i < prefix.length(); i++){
+            char ch = prefix[i];
+            if(!curr->containsKey(ch)){
+                return false;
+            }
+            curr = curr->get(ch);
+        }
+        return true;
+    }
+};
+```
