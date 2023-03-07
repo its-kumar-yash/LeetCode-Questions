@@ -1,0 +1,156 @@
+Write a function to find the longest common prefix string amongst an array of strings.
+
+If there is no common prefix, return an empty string "".
+
+
+**1. Iterative Approach **
+* Time Complexity - $$O(M * N)$$ , m - length of first string & n - length strs array
+* Space Complexity - $$O(1)$$ 
+```
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        string ans = "";
+
+        //iterate over first string and check the char one by one in the remaining string
+        for(int i = 0; i < strs[0].length(); i++){
+            char ch = strs[0][i]; //save one character from first string 
+
+            bool match = true;
+
+            for(int j = 1; j < strs.size(); j++){
+                //if char from first string doesnt match in any of the remaining string
+                if(strs[j].length() < i || ch != strs[j][i]){
+                    match = false;
+                    break;
+                }
+            }
+
+            if(match == false){
+                break;
+            }
+            
+            ans.push_back(ch);
+        }
+
+
+        return ans;
+    }
+};
+```
+
+
+**Using Trie - ChildrenCount**
+* Time Complexity - $$O(M * N)$$ , m - length of first string & n - length strs array
+* Space Complexity - $$O(M * N)$$ 
+```
+class TrieNode{
+public:
+    TrieNode* children[26];
+    bool isEnd;
+    int childrenCount;
+
+    //constructor
+    TrieNode(){
+        for(int i = 0; i < 26; i++){
+            children[i] = NULL;
+        }
+
+        isEnd = false;
+
+        childrenCount = 0;
+    } 
+};
+
+class Trie{
+public:
+    
+    TrieNode* root;
+
+    Trie(){
+        root = new TrieNode();
+    }
+
+    void insert(string word){
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.length(); i++){
+            int index = word[i] - 'a';
+
+            //if not present, add child node and increase children count
+            if(curr->children[index] == NULL){
+                curr->children[index] = new TrieNode();
+                curr->childrenCount++;
+            }
+
+            curr = curr->children[index];
+        }
+
+        curr->isEnd = true;
+    }
+
+
+    string lcp(string word){
+
+        string ans = "";
+        //edge case
+        if(word.length() == 0){
+            return ans;
+        }
+
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.length(); i++){
+            char ch = word[i];
+
+            // if children count is 1
+            if(curr->childrenCount == 1){
+                
+                ans.push_back(ch);
+
+                //aage badh jao
+                int index = ch - 'a';
+
+                curr = curr->children[index];
+            }
+
+            else{
+                break;
+            }
+
+            if(curr->isEnd == true){
+                break;
+            }
+        }
+
+        return ans;
+    }
+};
+
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        Trie* t = new Trie();
+
+        //insert all string into trie
+
+        for(int i = 0; i < strs.size(); i++){
+            string s = strs[i];
+
+            if(s == ""){
+                return "";
+            }
+
+            t->insert(s);
+
+        }
+
+
+        string first = strs[0];
+
+        string ans = t->lcp(first);
+
+        return ans;
+    }
+};
+```
