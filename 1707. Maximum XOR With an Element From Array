@@ -1,0 +1,134 @@
+You are given an array nums consisting of non-negative integers. You are also given a queries array, where queries[i] = [xi, mi].
+
+The answer to the ith query is the maximum bitwise XOR value of xi and any element of nums that does not exceed mi. In other words, the answer is max(nums[j] XOR xi) for all j such that nums[j] <= mi. If all elements in nums are larger than mi, then the answer is -1.
+
+Return an integer array answer where answer.length == queries.length and answer[i] is the answer to the ith query.
+You are given an array nums consisting of non-negative integers. You are also given a queries array, where queries[i] = [xi, mi].
+
+The answer to the ith query is the maximum bitwise XOR value of xi and any element of nums that does not exceed mi. In other words, the answer is max(nums[j] XOR xi) for all j such that nums[j] <= mi. If all elements in nums are larger than mi, then the answer is -1.
+
+Return an integer array answer where answer.length == queries.length and answer[i] is the answer to the ith query.
+
+**Using Trie Approach || Sorting || Offline Queries || 96%**
+*
+```
+class TrieNode{
+public:
+    TrieNode* children[2]; // every node can have two children 0 or 1
+    bool isEnd;
+    //constructor
+    TrieNode(){
+        children[0] = children[1] = NULL;
+        isEnd = false;
+    }
+};
+
+class Trie{
+public:
+     //initializing root of trie
+    TrieNode* root;
+    //constructor
+    Trie(){
+        root = new TrieNode();
+    }
+
+    //to insert given num (in binary representation - 32 bit)
+    void insert(int num){
+        TrieNode* curr = root;
+
+        for(int i = 31; i >= 0; i--){
+            int bit = (num >> i) & 1;
+
+            //if children does not contains this bit
+            //create a new children
+            if(curr->children[bit] == NULL){
+                curr->children[bit] = new TrieNode();
+            }
+
+            curr = curr->children[bit];
+        }
+
+        curr->isEnd = true;
+    }
+
+    // to get the maximum of xor operation with a given integer
+    int getMax(int num){
+        TrieNode* curr = root;
+        int maxNum = 0;
+
+        for(int i = 31; i >= 0; i--){
+            int bit = (num >> i) & 1; //find the ith bit
+
+            // now check if opposite of bit is contained by children or not
+            if(curr->children[1 - bit] != NULL){
+                maxNum = maxNum | (1 << i);
+                curr = curr->children[1 - bit];
+            }
+            else{
+                curr = curr->children[bit];
+            }
+        }
+
+        return maxNum;
+    }
+};
+
+class Solution {
+public:
+    vector<int> maximizeXor(vector<int>& nums, vector<vector<int>>& queries) {
+        //initialize root of trie
+        Trie* root = new Trie();
+        int q = queries.size(), n = nums.size();
+
+        //step 1 - sort the nums vector
+        sort(nums.begin(), nums.end());
+
+        //step 2 - modify queries to perform offline queries
+        //it will stores {mi , xi, idx(from original queries)}
+        vector<pair<int, pair<int,int>>> offlineQueries;
+
+        for(int i = 0; i < q; i++){
+            int xi = queries[i][0];
+            int mi = queries[i][1];
+
+            offlineQueries.push_back({mi, {xi, i}});
+        }
+
+        //step 3 - sort offline Queries according to mi
+        sort(offlineQueries.begin(), offlineQueries.end());
+
+        //step 4 - process the offline queries 
+        vector<int> ans(q, 0);
+
+        int idx = 0;
+
+        //iterate over offline queries
+        for(int i = 0; i < q; i++){
+            //extract all the data from offline queries
+            int mi = offlineQueries[i].first; 
+            int xi = offlineQueries[i].second.first;
+            int qIdx = offlineQueries[i].second.second;
+
+            //insert element from nums into trie
+            while(idx < n && nums[idx] <= mi){
+                root->insert(nums[idx]);
+                idx++;
+            }
+
+            //if idx == 0 means there is no max_XOR exist for a particular query
+            // in that case insert -1 at qIdx in ans 
+            if(idx == 0){
+                ans[qIdx] = -1;
+            }
+            // else find max_XOR
+            //and insert into ans 
+            else{
+                int maxi = root->getMax(xi);
+                ans[qIdx] = maxi;
+            }
+        }
+
+        return ans;
+    }
+};
+```
