@@ -1,0 +1,291 @@
+
+You are given an array of strings products and a string searchWord.
+
+Design a system that suggests at most three product names from products after each character of searchWord is typed. Suggested products should have common prefix with searchWord. If there are more than three products with a common prefix return the three lexicographically minimums products.
+
+Return a list of lists of the suggested products after each character of searchWord is typed.
+
+
+
+
+
+
+**1. Trie + DFS**
+* Time Complexity - $$O(M)$$ , $$M$$ - total number of character in products 
+* Space Complexity - $$O(26 * N)$$ , $$N$$ - number of nodes in the trie
+* Code 1 : 
+```
+class TrieNode{
+public:
+    TrieNode* children[26];
+    bool isEnd;
+
+    TrieNode(){
+        for(int i = 0; i < 26; i++){
+            children[i] = NULL;
+        }
+
+        isEnd = false;
+    }
+};
+
+class Trie{
+public:
+    TrieNode* root;
+
+    Trie(){
+        root = new TrieNode();
+    }
+
+    void insert(string word){
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.size(); i++){
+            int index = word[i] - 'a';
+
+            if(curr->children[index] == NULL){
+                curr->children[index] = new TrieNode();
+            }
+
+            curr = curr->children[index];
+        }
+
+        curr->isEnd = true;
+    }
+
+    void printSuggestions(TrieNode* curr, vector<string> &temp, string prefix){
+        if(temp.size() == 3){
+            return;
+        }
+        if(curr->isEnd){
+            temp.push_back(prefix);
+        }
+
+        for(char ch = 'a'; ch <= 'z'; ch++){
+            TrieNode* next = curr->children[ch - 'a'];
+
+            if(next != NULL){
+                prefix.push_back(ch);
+                printSuggestions(next, temp, prefix);
+                prefix.pop_back();
+            }
+        }
+    }
+
+
+    vector<vector<string>> getSuggestions(string s){
+        TrieNode* prev = root;
+        string prefix = "";
+        vector<vector<string>> ans;
+        int i = 0; 
+
+        for( i = 0; i < s.length(); i++){
+            char lastChar = s[i];
+
+            prefix.push_back(lastChar);
+
+            TrieNode* curr = prev->children[lastChar - 'a'];
+
+            if(curr == NULL){
+                break;
+            }
+
+            vector<string> temp;
+            printSuggestions(curr, temp, prefix);
+
+            ans.push_back(temp);
+
+            temp.clear();
+
+            prev = curr;
+        }
+
+        // if( i < s.size()){
+        //     while(i < s.size()){
+        //         ans.push_back({""});
+        //         i++;
+        //     }
+        // }
+
+        if(i < s.size()){
+            while(i < s.size()){
+                ans.push_back({});
+                i++;
+            }
+            
+        }
+
+
+        return ans;
+    }
+};
+
+
+class Solution {
+public:
+    vector<vector<string>> suggestedProducts(vector<string>& products, string searchWord) {
+        //to make suggestions lexicographically sorted
+        //first sort the product vector
+        sort(products.begin(), products.end());
+
+        Trie* root = new Trie();
+
+        for(int i = 0; i < products.size(); i++){
+            root->insert(products[i]);
+        }
+
+        return root->getSuggestions(searchWord);
+
+
+    }
+};
+```
+			
+* Code 2 :
+```
+class TrieNode{
+public:
+    TrieNode* children[26];
+    bool isEnd;
+
+    TrieNode(){
+        for(int i = 0; i < 26; i++){
+            children[i] = NULL;
+        }
+
+        isEnd = false;
+    }
+};
+
+class Trie{
+public:
+    TrieNode* root;
+
+    Trie(){
+        root = new TrieNode();
+    }
+
+    void insert(string word){
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.size(); i++){
+            int index = word[i] - 'a';
+
+            if(curr->children[index] == NULL){
+                curr->children[index] = new TrieNode();
+            }
+
+            curr = curr->children[index];
+        }
+
+        curr->isEnd = true;
+    }
+
+    // Runs a DFS on trie starting with given prefix and adds all the words in the result, limiting result size to 3
+    void printSuggestions(TrieNode* curr, vector<string> &temp, string prefix){
+        //edge case - to have only three suggestions
+        if(temp.size() == 3){
+            return;
+        }
+        if(curr->isEnd){
+            temp.push_back(prefix);
+        }
+
+        for(char ch = 'a'; ch <= 'z'; ch++){
+            TrieNode* next = curr->children[ch - 'a'];
+
+            if(next != NULL){
+                prefix.push_back(ch);
+                printSuggestions(next, temp, prefix);
+                prefix.pop_back();
+            }
+        }
+    }
+
+    //function to generate suggestions 
+    vector<string> getSuggestions(string prefix){
+        TrieNode* curr = root;
+        vector<string> res;
+
+        // Move curr to the end of prefix in its trie representation.
+        for(char ch : prefix){
+            if(curr->children[ch - 'a'] == NULL){
+                return res;
+            }
+            curr = curr->children[ch - 'a'];
+        }
+
+        printSuggestions(curr, res, prefix);
+        
+        return res;
+
+    }
+};
+
+
+class Solution {
+public:
+    vector<vector<string>> suggestedProducts(vector<string>& products, string searchWord) {
+        //to make suggestions lexicographically sorted
+        //first sort the product vector
+        sort(products.begin(), products.end());
+
+        Trie* root = new Trie();
+        vector<vector<string>> result;
+
+        //create a trie
+        //insert all products into trie
+        for(int i = 0; i < products.size(); i++){
+            root->insert(products[i]);
+        }
+
+        string prefix;
+
+        for(int i = 0; i < searchWord.length(); i++){
+            prefix += searchWord[i];
+            result.push_back(root->getSuggestions(prefix));
+        }
+
+
+        return result;
+    }
+};
+```
+
+**2. Sorting**
+
+```
+class Solution {
+public:
+    vector<vector<string>> suggestedProducts(vector<string>& products, string searchWord) {
+        sort(products.begin(), products.end());
+        int n = products.size();
+
+        vector<vector<string>> result;
+        vector<string> suggestions;
+
+        string prefix = "";
+
+        for(char ch : searchWord){
+            prefix += ch;
+            suggestions.clear();
+
+            for(int i = 0; i < n; i++){
+                string s = products[i];
+
+                if(s.substr(0, prefix.length()) == prefix){
+                    suggestions.push_back(s);
+                }
+                if(suggestions.size() == 3){
+                    break;
+                }
+            }
+
+            result.push_back(suggestions);
+        }
+
+        return result;
+
+    }
+};
+```
