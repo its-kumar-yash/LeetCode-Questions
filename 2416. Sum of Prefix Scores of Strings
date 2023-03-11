@@ -1,0 +1,103 @@
+You are given an array words of size n consisting of non-empty strings.
+
+We define the score of a string word as the number of strings words[i] such that word is a prefix of words[i].
+
+For example, if words = ["a", "ab", "abc", "cab"], then the score of "ab" is 2, since "ab" is a prefix of both "ab" and "abc".
+Return an array answer of size n where answer[i] is the sum of scores of every non-empty prefix of words[i].
+
+Note that a string is considered as a prefix of itself.
+
+
+
+**Using Trie - By mantaining a prefix count**
+* Time Complexity - $$O(N * K)$$ , N - no. of strings, K - no. of character in each string
+* Space Complexity -  $$O(N * K)$$ , N - no. of strings, K - no. of character in each string
+```
+// to implement a trie node
+class TrieNode{
+public:
+    TrieNode* children[26];
+    bool isEnd;
+    int prefixCount; // to mantain a prifix count
+
+    TrieNode(){
+        for(int i = 0; i < 26; i++){
+            children[i] = NULL;
+        }
+
+        prefixCount = 0; //initialized with zero
+        isEnd = false;
+    }
+};
+
+class Trie{
+public:
+    TrieNode* root;
+    Trie(){
+        root = new TrieNode();
+    }
+    
+    //to insert string into trie
+    void insert(string word){
+        TrieNode* curr = root;
+
+        for(int i = 0; i < word.length(); i++){
+            
+            int index = word[i] - 'a';
+
+            //if children not exist
+            if(curr->children[index] == NULL){
+                curr->children[index] = new TrieNode();
+            }
+
+            //increment children prefixcount
+            //and move children pointer forward
+            curr->children[index]->prefixCount++;
+            curr = curr->children[index];
+        }
+
+        curr->isEnd = true;
+    }
+
+    //function to get prefix score for a string
+    //based on searching a string in a trie 
+    int getPrefixScore(string word){
+        TrieNode* curr = root;
+        int score = 0; //initialize a score with 0
+
+        for(int i = 0; i < word.length(); i++){
+
+            int index = word[i] - 'a';
+
+            //add prefix count of children to score while traversing the string in trie
+            score = score + curr->children[index]->prefixCount;
+
+            curr = curr->children[index];
+        }
+
+        return score;
+    }
+};
+
+class Solution {
+public:
+    vector<int> sumPrefixScores(vector<string>& words) {
+        
+        Trie* root = new Trie();
+
+        //insert all string into trie
+        for(auto i : words){
+            root->insert(i);
+        }
+
+        vector<int> ans;
+        //finding prefix score for every string
+        for(auto i : words){
+            int score = root->getPrefixScore(i);
+            ans.push_back(score);
+        }
+
+        return ans;
+    }
+};
+```
