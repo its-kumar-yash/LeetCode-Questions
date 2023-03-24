@@ -1,0 +1,180 @@
+## Meta Interview Question 
+### DFS Approach - Without Using Visited DS
+* Time Complexity - $$O(N)$$
+	* We need $$O(n)$$ time to initialize the adjacency list.
+	* The dfs function visits each node once, which takes $$O(n)$$ time in total. Because we have undirected edges, each edge can only be iterated twice (by nodes at the end), resulting in $$O(e)$$ operations total while visiting all nodes, where eee is the number of edges. Because the given graph is a tree, there are $$n−1$$ undirected edges, so $$O(n+e)$$ = $$O(n)$$.
+* Space Complexity - $$O(N)$$
+	* Building the adjacency list takes $$O(n)$$ space.
+	* The recursion call stack used by dfs can have no more than nnn elements in the worst-case scenario. It would take up $$O(n)$$ space in that case.
+```
+class Solution {
+public:
+    int ans = 0; // to store the number of edges to be changed
+
+    //function to dfs traversal
+    void dfs(int src, int parent, unordered_map<int, list<pair<int, bool>>> &adjList){
+        //visit all neighbours of source node
+        for(auto neighbour : adjList[src]){
+            int v = neighbour.first; //destination edge
+            bool check = neighbour.second; // edge check - original or fake
+
+            //condition to prevent visiting the parent node again 
+            if( v != parent){
+                //(check == true) means there is a original edge from src to destination node
+                //but we want all the neighbour nodes should to directed towards src node
+                //therefore this edge must be changed in order to meet the required condition
+                //so we increment our ans
+                if(check == true){
+                    ans++;
+                }
+
+                //recursive call to check remaining neighbouring nodes
+                dfs(v, src, adjList);
+            }
+        }
+    }
+
+
+    int minReorder(int n, vector<vector<int>>& connections) {
+        //Step 1 -->
+        //create adjacency list of connections provided
+        //with addition to a reverse edge to traverse all the nodes
+        //also have a check variable which indicate that the edge is original or created by us
+        // check = true --> original edge
+        // check = false --> fake edge(created by us to traverse all nodes)
+        
+        //{src edge, {destination edge, check}}
+        unordered_map<int, list<pair<int, bool>>> adjList;
+
+        for(int i = 0; i < connections.size(); i++){
+            int u = connections[i][0];
+            int v = connections[i][1];
+
+            adjList[u].push_back({v, 1}); //original edge
+            adjList[v].push_back({u, 0}); //fake edge
+        } 
+
+        //Step 2 -->
+        //now it is a undirected graph
+        //therefore we can perform DFS traversal 
+
+        dfs(0, -1, adjList);
+
+        return ans;
+    }
+};
+```
+
+### DFS Approach - Using Visited DS
+```
+class Solution {
+public:
+    int ans = 0; // to store the number of edges to be changed
+
+    //function to dfs traversal
+    void dfs(int src, int parent, unordered_map<int, list<pair<int, bool>>> &adjList, unordered_map<int, bool> &visited){
+        visited[src] = true;
+
+        //visit all neighbours of source node
+        for(auto neighbour : adjList[src]){
+            int v = neighbour.first; //destination edge
+            bool check = neighbour.second; // edge check - original or fake
+
+            //condition to prevent visiting the parent node again 
+            if(!visited[v]){
+                //(check == true) means there is a original edge from src to destination node
+                //but we want all the neighbour nodes should to directed towards src node
+                //therefore this edge must be changed in order to meet the required condition
+                //so we increment our ans
+                if(check == true){
+                    ans++;
+                }
+
+                //recursive call to check remaining neighbouring nodes
+                dfs(v, src, adjList, visited);
+            }
+        }
+    }
+
+
+    int minReorder(int n, vector<vector<int>>& connections) {
+        //Step 1 -->
+        //create adjacency list of connections provided
+        //with addition to a reverse edge to traverse all the nodes
+        //also have a check variable which indicate that the edge is original or created by us
+        // check = true --> original edge
+        // check = false --> fake edge(created by us to traverse all nodes)
+        
+        //{src edge, {destination edge, check}}
+        unordered_map<int, list<pair<int, bool>>> adjList;
+
+        for(int i = 0; i < connections.size(); i++){
+            int u = connections[i][0];
+            int v = connections[i][1];
+
+            adjList[u].push_back({v, 1}); //original edge
+            adjList[v].push_back({u, 0}); //fake edge
+        } 
+
+        //Step 2 -->
+        //now it is a undirected graph
+        //therefore we can perform DFS traversal 
+        unordered_map<int, bool> visited;
+
+        dfs(0, -1, adjList, visited);
+
+        return ans;
+    }
+};
+```
+
+### BFS Approach - Using Visited DS
+```
+class Solution {
+public:
+    int ans = 0;
+
+    void bfs(int src, unordered_map<int, list<pair<int, bool>>> &adjList){
+        queue<int> q;
+        unordered_map<int, bool> visited;
+        q.push(src);
+
+        visited[src] = true;
+
+        while(!q.empty()){
+            int front = q.front();
+            q.pop();
+
+            for(auto neighbour : adjList[front]){
+                int v = neighbour.first;
+                bool check = neighbour.second;
+
+                if(!visited[v]){
+                    if(check == 1){
+                        ans++;
+                    }
+                    visited[v] = true;
+                    q.push(v);
+                }
+            }
+        }
+    }
+
+    int minReorder(int n, vector<vector<int>>& connections) {
+
+        unordered_map<int, list<pair<int, bool>>> adjList;
+
+        for(int i = 0; i < connections.size(); i++){
+            int u = connections[i][0];
+            int v = connections[i][1];
+
+            adjList[u].push_back({v, 1}); //original edge
+            adjList[v].push_back({u, 0}); //fake edge
+        } 
+
+        bfs(0, adjList);
+
+        return ans;
+    }
+};
+```
