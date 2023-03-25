@@ -1,0 +1,152 @@
+You are given an integer n. There is an undirected graph with n nodes, numbered from 0 to n - 1. You are given a 2D integer array edges where edges[i] = [ai, bi] denotes that there exists an undirected edge connecting nodes ai and bi.
+
+Return the number of pairs of different nodes that are unreachable from each other.
+
+
+## Microsoft Interview Question
+### Using DFS 
+
+* Approach - From Discussion
+
+* Time complexity: $$O(n+e)$$.
+	* We need $$O(e)$$ time to initialize the adjacency list and $$O(n)$$ time to initialize the visit array.
+	* The dfs function visits each node once, which takes $$O(n)$$ time in total. Because we have undirected edges, each edge can only be iterated twice (by nodes at the end), resulting in $$O(e)$$ operations total while visiting all nodes.
+	* As a result, the total time required is $$O(n+e)$$.
+
+*  Space complexity: $$O(n+e)$$
+	* Building the adjacency list takes $$O(e)$$ space.
+  * The visit array takes $$O(n)$$ space.
+	* The recursion call stack used by dfs can have no more than nnn elements in the worst-case scenario. It would take up $$O(n)$$ space in that case.
+
+```
+class Solution {
+public:
+    //function to perform dfs
+    void dfs(int src, unordered_map<int, list<int>> &adjList, long long &size, vector<bool> &visited){
+        //mark the curr node as true
+        //also increase the size of the component
+        visited[src] = true;
+        size += 1; 
+
+        //exploring the neighbouring nodes of src node
+        for(auto adjNode : adjList[src]){
+            if(!visited[adjNode]){
+                visited[adjNode] = true;
+                dfs(adjNode, adjList, size, visited);
+            }
+        }
+    }
+    long long countPairs(int n, vector<vector<int>>& edges) {
+        //step 1 --> create adjacency list
+        unordered_map<int, list<int>> adjList;
+
+        for(int i = 0; i < edges.size(); i++){
+            int u = edges[i][0];
+            int v = edges[i][1];
+
+            adjList[u].push_back(v);
+            adjList[v].push_back(u);
+        } 
+
+        //step 2 --> perform dfs over all components of graphs
+        long long result = 0; // to store the number of pairs of unreachable nodes
+        vector<bool> visited(n, false); 
+
+        //to store the number graph component that are left to be evaluate
+        //currently all nodes are left to evaluate
+        long long currRemaining = n;
+
+        for(int i = 0; i < n; i++){
+            
+            if(!visited[i]){
+
+                long long size = 0; //to store the size of the component of graph
+
+                dfs(i, adjList, size, visited);
+            
+                //this will give the remaining number of nodes
+                currRemaining = currRemaining - size; 
+            
+                //finding possible number of pairs
+                //by multiplying size of one component to remaining nodes
+                result += size * currRemaining;
+            
+            }
+                
+        }
+
+        return result;
+    }
+};
+```
+
+## Using BFS
+
+```
+class Solution {
+public:
+    //function to perform bfs
+    void bfs(int src, unordered_map<int, list<int>> &adjList, long long &size, vector<bool> &visited){
+        
+        queue<int> q;
+        q.push(src);
+        size++;
+        visited[src] = true;
+
+        while(!q.empty()){
+            int front = q.front();
+            q.pop();
+
+            for(auto adjNode : adjList[front]){
+                if(!visited[adjNode]){
+                    size++;
+                    visited[adjNode] = true;
+                    q.push(adjNode);
+                }
+            }
+        }
+
+    }
+    long long countPairs(int n, vector<vector<int>>& edges) {
+        //step 1 --> create adjacency list
+        unordered_map<int, list<int>> adjList;
+
+        for(int i = 0; i < edges.size(); i++){
+            int u = edges[i][0];
+            int v = edges[i][1];
+
+            adjList[u].push_back(v);
+            adjList[v].push_back(u);
+        } 
+
+        //step 2 --> perform bfs over all components of graphs
+        long long result = 0; // to store the number of pairs of unreachable nodes
+        vector<bool> visited(n, false); 
+
+        //to store the number graph component that are left to be evaluate
+        //currently all nodes are left to evaluate
+        long long currRemaining = n;
+
+        for(int i = 0; i < n; i++){
+            
+            if(!visited[i]){
+
+                long long size = 0; //to store the size of the component of graph
+
+                bfs(i, adjList, size, visited);
+            
+                //this will give the remaining number of nodes
+                currRemaining = currRemaining - size; 
+            
+                //finding possible number of pairs
+                //by multiplying size of one component to remaining nodes
+                result += size * currRemaining;
+            
+            }
+                
+        }
+
+        return result;
+    }
+};
+```
