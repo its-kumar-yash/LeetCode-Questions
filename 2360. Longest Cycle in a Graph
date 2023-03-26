@@ -1,0 +1,160 @@
+You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
+
+The graph is represented with a given 0-indexed array edges of size n, indicating that there is a directed edge from node i to node edges[i]. If there is no outgoing edge from node i, then edges[i] == -1.
+
+Return the length of the longest cycle in the graph. If no cycle exists, return -1.
+
+A cycle is a path that starts and ends at the same node.
+
+
+
+### DFS Cycle Detection In Directed Graph
+
+* Approach : From Discussion
+
+* Time complexity: $$O(n)$$.
+
+	* Initializing the visit array takes $$O(n)$$ time.
+	* The dfs function visits each node once, which takes $$O(n)$$ time in total. Because we have directed edges, each edge will be iterated once, resulting in $$O(n)$$ operations in total while visiting all the nodes.
+	* Each operation on the dist map takes $$O(1)$$ time. Because we insert a distance for each node when it is visited, it will take $$O(n)$$ time to insert distances for all of the nodes. It is also used to check the formation of a cycle when a previously visited node is encountered again. Because there are nnn nodes, it can be checked at most nnn times. It would also take $$O(n)$$ time in that case.
+
+* Space complexity: $$O(n)$$.
+
+	* The visit array takes $$O(n)$$ space.
+	* The recursion call stack used by dfs can have no more than $$n$$ elements in the worst-case scenario. It would take up $$O(n)$$ space in that case.
+	* The count array can also have no more than $$n$$ elements and hence it would take up $$O(n)$$ space as well.
+
+```
+class Solution {
+public:
+    int result = -1; // to store the longest cycle length
+
+    void dfs(int src, vector<int>& edges, vector<bool> &visited, vector<bool> &recurStack, vector<int> &count){
+        //if there is an edge from src node
+        if(src != -1){
+            visited[src] = true;
+            recurStack[src] = true;
+
+            int dest = edges[src]; // finding the destination node
+
+            if(dest != -1 && !visited[dest]){
+                //if it is possible to move to destination node
+                //means cycle is not yet found
+                //update the count of destination node in the count array
+                count[dest] = count[src] + 1; 
+
+                //also make dfs call to dest node
+                dfs(dest, edges, visited, recurStack, count);
+            }
+            else if(dest != -1 && recurStack[dest] == true){
+                //cycle found at the destination node
+                //update the result
+                result = max(result, count[src] - count[dest] + 1);
+            }
+
+            //before returing from current recursion call
+            //make src node false in recurStack Array
+            recurStack[src] = false; 
+        }
+    }
+
+    int longestCycle(vector<int>& edges) {
+
+        //here we are not required to create adjacency list
+        //because we can easily extract u and v from edges array
+
+        int n = edges.size();
+        //create visited and recurrStack vector
+        vector<bool> visited(n, false);
+        vector<bool> recurStack(n, false);
+
+        //create count array to store the count of the node being visited in the cycle
+        //initialize all node as 1
+        vector<int> count(n , 1);
+
+        //before dfs
+        for(int i = 0; i < n; i++){
+            if(!visited[i]){
+                dfs(i, edges, visited, recurStack, count);
+            }
+        }
+
+        return result;
+    }
+};
+```
+
+### BFS Cycle Detection - Kahn Algo
+
+```
+class Solution {
+public:
+    int longestCycle(vector<int>& edges) {
+        int n = edges.size();
+
+        //create indegree array
+        vector<int> indegree(n);
+ 
+        //create a visited array
+        vector<bool> visited(n , false);
+
+
+        for(auto i : edges){
+            if(i != -1){
+                indegree[i]++;
+            }
+        }
+
+        // Kahn's algorithm starts.
+        //create a queue for the bfs traversal
+        queue<int> q;
+
+        //push all vectices with zero indegree into queue
+        for(int i = 0; i < n; i++){
+            if(indegree[i] == 0){
+                q.push(i);
+            }
+        }
+
+
+        while(!q.empty()){
+            int front = q.front();
+            q.pop();
+
+            visited[front] = true;
+
+            int neighbor = edges[front];
+
+            if(neighbor != -1){
+                indegree[neighbor]--;
+                if(indegree[neighbor] == 0){
+                    q.push(neighbor);
+                }
+            }
+        }
+        // Kahn's algorithm ends.
+
+        int result = -1;
+
+        for(int i = 0; i < n; i++){
+            if(!visited[i]){
+                int neighbor = edges[i];
+
+                int count = 1;
+                visited[i] = true;
+
+                //iterate in the cycle
+                while(neighbor != i){
+                    visited[neighbor] = true;
+                    count++;
+                    neighbor = edges[neighbor];
+                }
+
+                result = max(result, count);
+            }
+        }
+
+        return result;
+    }
+};
+```
