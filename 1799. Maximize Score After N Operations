@@ -1,0 +1,136 @@
+# Very Good Question
+
+## Recursion + BackTracking - TLE
+
+```
+class Solution {
+public:
+    int solve(vector<int> &nums, vector<bool> &visited, int &n, int operation){
+        //to store max score
+        int maxScore = 0;
+
+        //start selecting two element from nums
+        //fixing first element of the possible pair
+        //no need to check for last element
+        for(int i = 0; i < n - 1; i++){
+
+            //if first element is already visited skip it
+            if(visited[i]){
+                continue;
+            }
+
+            //fixing second element of the pair
+            for(int j = i + 1; j < n; j++){
+                //if secong element is already visited skip it
+                if(visited[j]){
+                    continue;
+                }
+
+                //otherwise 
+                //1. mark them true
+                visited[i] = true;
+                visited[j] = true;
+
+                //2. calculate current score
+                int  currScore = operation * __gcd(nums[i], nums[j]);
+
+                //3. call for remaining score by increasing operation
+                int remainingScore = solve(nums, visited, n, operation + 1);
+
+                //4. make marked element unmarked by backtracking
+                // to make further recursive calls
+                visited[i] = false;
+                visited[j] = false;
+
+                //5. update max score
+
+                //total score = curr score + remaining score
+                maxScore = max(maxScore, currScore + remainingScore);
+            }
+        }
+
+        return maxScore;
+    }
+    int maxScore(vector<int>& nums) {
+        int operation = 1; //starting with first operation
+        int n = nums.size();
+        vector<bool> visited(n, false); //to mark used element
+
+        return solve(nums, visited, n, operation);
+    }
+};
+```
+
+## Backtracking + MEMO
+
+* Time Complexity - $$O(2^N * N^2 * LogM)$$
+
+
+```
+class Solution {
+public:
+    int solve(vector<int> &nums, vector<bool> &visited, int &n, int operation, unordered_map<vector<bool>, int> &mp){
+
+        //if we have already solved the same configuration
+        //so no need to solve further
+        if(mp.find(visited) != mp.end()){
+            return mp[visited];
+        }
+
+
+        //to store max score
+        int maxScore = 0;
+
+        //start selecting two element from nums
+        //fixing first element of the possible pair
+        //no need to check for last element
+        for(int i = 0; i < n - 1; i++){
+
+            //if first element is already visited skip it
+            if(visited[i]){
+                continue;
+            }
+
+            //fixing second element of the pair
+            for(int j = i + 1; j < n; j++){
+                //if secong element is already visited skip it
+                if(visited[j]){
+                    continue;
+                }
+
+                //otherwise 
+                //1. mark them true
+                visited[i] = true;
+                visited[j] = true;
+
+                //2. calculate current score
+                int  currScore = operation * __gcd(nums[i], nums[j]);
+
+                //3. call for remaining score by increasing operation
+                int remainingScore = solve(nums, visited, n, operation + 1, mp);
+
+                //4. make marked element unmarked by backtracking
+                // to make further recursive calls
+                visited[i] = false;
+                visited[j] = false;
+
+                //5. update max score
+
+                //total score = curr score + remaining score
+                maxScore = max(maxScore, currScore + remainingScore);
+            }
+        }
+
+        //store answer into map
+        return mp[visited] = maxScore;
+    }
+    int maxScore(vector<int>& nums) {
+        int operation = 1; //starting with first operation
+        int n = nums.size();
+        vector<bool> visited(n, false); //to mark used element
+        unordered_map<vector<bool>, int> mp; // to implement memoization
+
+        return solve(nums, visited, n, operation, mp);
+    }
+};
+```
