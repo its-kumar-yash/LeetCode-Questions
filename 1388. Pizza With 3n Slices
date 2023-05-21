@@ -1,0 +1,154 @@
+There is a pizza with 3n slices of varying size, you and your friends will take slices of pizza as follows:
+
+You will pick any pizza slice.
+Your friend Alice will pick the next slice in the anti-clockwise direction of your pick.
+Your friend Bob will pick the next slice in the clockwise direction of your pick.
+Repeat until there are no more slices of pizzas.
+Given an integer array slices that represent the sizes of the pizza slices in a clockwise direction, return the maximum possible sum of slice sizes that you can pick.
+
+## House Robbery Based
+
+```
+class Solution {
+public:
+    //HOUSE ROBBERY PROBLEM
+
+    //Recursion - TLE
+    int solve(int StartIdx, int endIdx, vector<int>& slices, int n){
+        //base case
+        //no slice to eat
+        if(n == 0 || StartIdx > endIdx){
+            return 0;
+        }
+
+        //include curr slice
+        //agar me current khaunga toh next me nhi kha skta
+        //alice ya bob khayenge
+        int incl = slices[StartIdx] + solve(StartIdx + 2, endIdx, slices, n - 1);
+        //exclude curr slice
+        int excl = solve(StartIdx + 1, endIdx, slices, n);
+
+        return max(incl, excl);
+    }
+
+    //Recursion + MEMO - 33 ms
+    int recurMEMO(int startIdx, int endIdx, vector<int>& slices, int n, vector<vector<int>> &dp){
+        if(n == 0 || startIdx > endIdx){
+            return 0;
+        }
+
+        if(dp[startIdx][n] != -1){
+            return dp[startIdx][n];
+        }
+
+        int incl = slices[startIdx] + recurMEMO(startIdx + 2, endIdx, slices, n - 1, dp);
+        int excl = recurMEMO(startIdx + 1, endIdx, slices, n, dp);
+
+        dp[startIdx][n] = max(incl, excl);
+
+        return dp[startIdx][n];
+    }
+
+    //Tabulation - 27 ms
+    int tabulation(vector<int> &slices, int n){
+        vector<vector<int>> dp1(n + 2, vector<int>(n + 2, 0));
+        vector<vector<int>> dp2(n + 2, vector<int>(n + 2, 0));
+        
+        //Case 1 - including starting slice and skipping last slice 
+        for(int idx = n - 2; idx >= 0; idx--){
+            for(int k = 1; k <= n/3; k++){
+                int incl = slices[idx] + dp1[idx + 2][k - 1];
+                int excl = dp1[idx + 1][k];
+
+                dp1[idx][k] = max(incl, excl);
+            }
+        }
+
+        int ans1 = dp1[0][n/3];
+
+        //Case 2 - including last slice, skipping first
+        for(int idx = n - 1; idx >= 1; idx--){
+            for(int k = 1; k <= n/3; k++){
+                int incl = slices[idx] + dp2[idx + 2][k - 1];
+                int excl = dp2[idx + 1][k];
+
+                dp2[idx][k] = max(incl, excl);
+            } 
+        }
+
+        int ans2 = dp2[1][n/3];
+
+        return max(ans1, ans2);
+    }
+
+    //Space Optimization - 21 ms
+    int spaceOP(vector<int> &slices, int n){
+        //Case 1 - including starting slice and skipping last slice 
+        vector<int> prev1(n + 2, 0);
+        vector<int> curr1(n + 2, 0);
+        vector<int> next1(n + 2, 0);
+
+        for(int idx = n - 2; idx >= 0; idx--){
+            for(int k = 1; k <= n/3; k++){
+                int incl = slices[idx] + next1[k - 1];
+                int excl = curr1[k];
+
+                prev1[k] = max(incl, excl);
+            }
+            next1 = curr1;
+            curr1 = prev1;
+        }
+
+        int ans1 = curr1[n/3];
+
+        //Case 2 - including last slice, skipping first
+        vector<int> prev2(n + 2, 0);
+        vector<int> curr2(n + 2, 0);
+        vector<int> next2(n + 2, 0);
+
+        for(int idx = n - 1; idx >= 1; idx--){
+            for(int k = 1; k <= n/3; k++){
+                int incl = slices[idx] + next2[k - 1];
+                int excl = curr2[k];
+
+                prev2[k] = max(incl, excl);
+            }
+            next2 = curr2;
+            curr2 = prev2;
+        }
+
+        int ans2 = curr2[n/3];
+
+        return max(ans1, ans2);
+    }
+
+
+    int maxSizeSlices(vector<int>& slices) {
+        int k = slices.size();
+
+        //Method 1
+
+        // //include first, skip last slice
+        // int ans1 = solve(0, k - 2, slices, k/3);
+        // //include last, skip first slice
+        // int ans2 = solve(1, k - 1, slices, k/3);
+
+        // return max(ans1, ans2);
+
+        //Method 2
+        // vector<vector<int>> dp1(k + 1, vector<int>(k/3 + 1, -1));
+        // vector<vector<int>> dp2(k + 1, vector<int>(k/3 + 1, -1));
+
+        // int ans1 = recurMEMO(0, k - 2, slices, k/3, dp1);
+        // int ans2 = recurMEMO(1, k - 1, slices, k/3, dp2);
+
+        // return max(ans1, ans2);
+
+        //Method 3
+        // return tabulation(slices, k);
+
+        //Method 4
+        return spaceOP(slices, k);
+    }
+};
+```
