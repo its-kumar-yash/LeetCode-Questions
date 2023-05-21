@@ -1,0 +1,113 @@
+You are given a 2D array of integers envelopes where envelopes[i] = [wi, hi] represents the width and the height of an envelope.
+
+One envelope can fit into another if and only if both the width and height of one envelope are greater than the other envelope's width and height.
+
+Return the maximum number of envelopes you can Russian doll (i.e., put one inside the other).
+
+Note: You cannot rotate an envelope.
+
+
+## Google Question
+* Suppose instead of letters, we now have cuboidal boxes. I'm thinking is it possible to generalize LIS(nlogn) solution to 3d.
+	* For 2d algorithm is
+		1. sort by length in increasing order.
+		2. if length is same, sort by breadth in decreasing order
+		3. find LIS of breadths
+		
+	* Can we for 3d
+		1. sort by length in increasing order
+		2. if length is same, sort by breadth in increasing order
+		3. if breadth is same, sort by height in decreasing order
+		4. find LIS of heights
+
+* Time Complexity - $$O(N * LogN)$$
+* Space Complexzity - $$O(N)$$
+
+## Brute Force - Sorting + LIS
+```
+class Solution {
+public:
+    static bool cmp(vector<int> &a, vector<int> &b){
+        if(a[0] == b[0]){
+            //decreasing order of height
+            return a[1] > b[1];
+        }
+        //increasing order of width
+        return a[0] < b[0];
+    }
+
+    int LIS(int n, vector<int> a){
+        if(n == 0){
+            return 0;
+        }
+
+        vector<int> ans;
+        ans.push_back(a[0]);
+
+        for(int i = 1; i < n; i++){
+            if(a[i] > ans.back()){
+                ans.push_back(a[i]);
+            }
+            else{
+                int idx = lower_bound(ans.begin(), ans.end(), a[i]) - ans.begin();
+                ans[idx] = a[i];
+            }
+        }
+
+        return ans.size();
+    }
+
+    int maxEnvelopes(vector<vector<int>>& envelopes) {
+        //sort by length in increasing order.
+        //if length is same, sort by breadth in decreasing order
+        sort(envelopes.begin(), envelopes.end(), cmp);
+
+        vector<int> a;
+        for(auto e : envelopes){
+           a.push_back(e[1]);
+        }
+
+        int n  = a.size();
+
+        int ans = LIS(n, a);
+        return ans;
+    }
+};
+```
+## Optimized Code
+```
+class Solution {
+public:
+    static bool cmp(vector<int> &a, vector<int> &b){
+        if(a[0] == b[0]){
+            //decreasing order of height
+            return a[1] > b[1];
+        }
+        //increasing order of width
+        return a[0] < b[0];
+    }
+
+    int maxEnvelopes(vector<vector<int>>& envelopes) {
+        //sort by length in increasing order.
+        //if length is same, sort by breadth in decreasing order
+        sort(envelopes.begin(), envelopes.end(), cmp);
+
+        //LIS
+        int n  = envelopes.size();
+        vector<int> ans;
+        ans.push_back(envelopes[0][1]);
+
+        for(int i = 0; i < n; i++){
+            if(envelopes[i][1] > ans.back()){
+                ans.push_back(envelopes[i][1]);
+            }
+            else{
+                int idx = lower_bound(ans.begin(), ans.end(), envelopes[i][1]) - ans.begin();
+                ans[idx] = envelopes[i][1];
+            }
+        }
+
+        return ans.size();
+    }
+};
+```
