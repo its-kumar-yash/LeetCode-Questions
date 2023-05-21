@@ -1,0 +1,60 @@
+Given n cuboids where the dimensions of the ith cuboid is cuboids[i] = [widthi, lengthi, heighti] (0-indexed). Choose a subset of cuboids and place them on each other.
+
+You can place cuboid i on cuboid j if widthi <= widthj and lengthi <= lengthj and heighti <= heightj. You can rearrange any cuboid's dimensions by rotating it to put it on another cuboid.
+
+Return the maximum height of the stacked cuboids.
+
+
+## Sorting + LIS (Tabulation)
+
+* Time Complexity - $$O(N^2)$$
+* SpaceComplexity - $$O(N)$$
+```
+class Solution {
+public:
+    bool check(vector<int> base, vector<int> newBox){
+        //widthi <= widthj and lengthi <= lengthj and heighti <= heightj
+        if(base[0] >= newBox[0] && base[1] >= newBox[1] && base[2] >= newBox[2]){
+            return true;
+        }
+
+        return false;
+    }
+    //LIS function - space optimization
+    int LIS(int n, vector<vector<int>>& c){
+        vector<int> currRow(n + 1, 0);
+        vector<int> nextRow(n + 1, 0);
+
+        for(int curr = n - 1; curr >= 0; curr--){
+            for(int prev = curr - 1; prev >= -1; prev--){
+                int incl = 0;
+                //either first element or greater element than prev element
+                if(prev == -1 || check(c[curr], c[prev])){
+                    incl = c[curr][2] + nextRow[curr + 1];
+                } 
+                //exclude current element
+                //prev remains same
+                int excl = nextRow[prev + 1];
+
+                currRow[prev + 1] = max(incl, excl);
+            }
+            nextRow = currRow;
+        }
+
+        return nextRow[0];
+    }
+    int maxHeight(vector<vector<int>>& cuboids) {
+        //sort all dimension of cuboid
+        for(auto &c : cuboids){
+            sort(c.begin(), c.end());
+        }
+
+        //sort all cuboid acc to width - 1st
+        sort(cuboids.begin(), cuboids.end());
+
+        //use LIS logic
+        int n = cuboids.size();
+        return LIS(n , cuboids);
+    }
+};
+```
