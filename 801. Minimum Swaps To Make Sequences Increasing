@@ -1,0 +1,182 @@
+You are given two integer arrays of the same length nums1 and nums2. In one operation, you are allowed to swap nums1[i] with nums2[i].
+
+For example, if nums1 = [1,2,3,8], and nums2 = [5,6,7,4], you can swap the element at i = 3 to obtain nums1 = [1,2,3,4] and nums2 = [5,6,7,8].
+Return the minimum number of needed operations to make nums1 and nums2 strictly increasing. The test cases are generated so that the given input always makes it possible.
+
+An array arr is strictly increasing if and only if arr[0] < arr[1] < arr[2] < ... < arr[arr.length - 1].
+
+ 
+
+
+### DP with Distinct Ways
+
+* Time Complexity - $$O(N)$$
+* Space Complexity - $$O(N)$$
+
+```
+class Solution {
+public:
+    //Recursion - TLE
+    int solve(int idx, vector<int>& nums1, vector<int>& nums2, bool swapped){
+        //base case
+        //when no element left
+        if(idx >= nums1.size()){
+            return 0;
+        }
+
+        //declare two prev element for each array
+        int prev1 = nums1[idx - 1];
+        int prev2 = nums2[idx - 1];
+
+        //check if previously swapped has done
+        //if yes, swap both prev element
+        if(swapped){
+            swap(prev1, prev2);
+        } 
+
+        int ans = INT_MAX;
+
+        //for every index we have two choice either swap or not swap
+        //recursion call for no swap
+        if(nums1[idx] > prev1 && nums2[idx] > prev2){
+            ans = solve(idx + 1, nums1, nums2, 0);
+        }
+        //Recursion call for swap
+        if(nums1[idx] > prev2 && nums2[idx] > prev1){
+            ans = min(ans, 1 + solve(idx + 1, nums1, nums2, 1));
+        }
+
+        return ans;
+    }   
+
+    //Recursion + MEMO - 375 ms
+    int recurMEMO(int idx, vector<int>& nums1, vector<int>& nums2, bool swapped, vector<vector<int>> &dp, int n){
+        if(idx >= n){
+            return 0;
+        }
+
+        if(dp[idx][swapped] != -1){
+            return dp[idx][swapped]; 
+        }
+
+        int prev1 = nums1[idx - 1];
+        int prev2 = nums2[idx - 1];
+
+        if(swapped){
+            swap(prev1, prev2);
+        }
+
+        int ans = INT_MAX;
+        //no swap
+        if(nums1[idx] > prev1 && nums2[idx] > prev2){
+            ans = recurMEMO(idx + 1, nums1, nums2, 0, dp, n);
+        }
+        //swap
+        if(nums1[idx] > prev2 && nums2[idx] > prev1){
+            ans = min(ans, 1 + recurMEMO(idx + 1, nums1, nums2, 1, dp, n));
+        }
+
+        dp[idx][swapped] = ans;
+
+        return dp[idx][swapped];
+    }
+
+    //Tabulation - 335 ms
+    int tabulation(vector<int>& nums1, vector<int>& nums2, int n){
+        vector<vector<int>> dp(n + 1, vector<int>(2, 0));
+
+        for(int idx = n - 1; idx >= 1; idx--){
+            for(int swapped = 1; swapped >= 0; swapped--){
+                int prev1 = nums1[idx - 1];
+                int prev2 = nums2[idx - 1];
+
+                if(swapped){
+                    swap(prev1, prev2);
+                }
+
+                 int ans = INT_MAX;
+                //no swap
+                if(nums1[idx] > prev1 && nums2[idx] > prev2){
+                    ans = dp[idx + 1][0];
+                }
+                //swap
+                if(nums1[idx] > prev2 && nums2[idx] > prev1){
+                    ans = min(ans, 1 + dp[idx + 1][1]);
+                }
+
+                dp[idx][swapped] = ans;
+            }
+        }
+
+        return dp[1][0];
+    }
+
+    //Space Optimization - 177 ms - 96%
+    int spaceOp(vector<int>& nums1, vector<int>& nums2, int n){
+        int swap = 0;
+        int noSwap = 0;
+        int currSwap = 0;
+        int currNoSwap = 0;
+
+        for(int idx = n - 1; idx >= 1; idx--){
+            for(int swapped = 1; swapped >= 0; swapped--){
+                int prev1 = nums1[idx - 1];
+                int prev2 = nums2[idx - 1];
+
+                if(swapped){
+                    int temp = prev2;
+                    prev2 = prev1;
+                    prev1 = temp;
+                }
+
+                 int ans = INT_MAX;
+                //no swap
+                if(nums1[idx] > prev1 && nums2[idx] > prev2){
+                    ans = noSwap;
+                }
+                //swap
+                if(nums1[idx] > prev2 && nums2[idx] > prev1){
+                    ans = min(ans, 1 + swap);
+                }
+
+                if(swapped){
+                    currSwap = ans;
+                }
+                else{
+                    currNoSwap = ans;
+                }
+            }
+            swap = currSwap;
+            noSwap = currNoSwap;
+        }
+
+        return min(swap, noSwap);
+    }
+
+    int minSwap(vector<int>& nums1, vector<int>& nums2) {
+        //step 1 - insert -1 to the beginning of both arrays
+        nums1.insert(nums1.begin(), -1);
+        nums2.insert(nums2.begin(), -1);
+
+        //initialize a bool variable swapped
+        //that represent previous swapping has take place or not
+        bool swapped = 0;
+
+        //Method 1
+        //start from first index
+        // return solve(1, nums1, nums2, swapped);
+
+        //Method 2
+        int n = nums1.size();
+        // vector<vector<int>> dp(n + 1, vector<int>(2, -1));
+
+        // return recurMEMO(1, nums1, nums2, swapped, dp, n);
+
+        //Method 3
+        // return tabulation(nums1, nums2, n);
+
+        //Method 4
+        return spaceOp(nums1, nums2, n);
+    }
+};
+```
